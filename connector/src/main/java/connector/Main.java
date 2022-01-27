@@ -28,12 +28,19 @@ public class Main {
             //STEP 3: Execute a query
             System.out.println("Creating table in given database...");
             stmt = conn.createStatement();
-            String sql =  "CREATE TABLE   REGISTRATION " +
-                    "(id INTEGER not NULL, " +
-                    " first VARCHAR(255), " +
-                    " last VARCHAR(255), " +
-                    " age INTEGER, " +
-                    " PRIMARY KEY ( id ))";
+            String sql =  "DROP TABLE REGISTRATION IF EXISTS;";
+            stmt.executeUpdate(sql);
+
+            sql = "CREATE TABLE REGISTRATION (id INTEGER not NULL, first VARCHAR(255),last VARCHAR(255), age INTEGER, PRIMARY KEY (id));";
+            stmt.executeUpdate(sql);
+            System.out.println("Created table in given database...");
+
+            sql = "Insert into Registration(id, first) values (1, 'first');" +
+                    "CREATE Hash INDEX prime_index ON REGISTRATION(id);" +
+                    "CREATE Hash INDEX non_prime_index ON REGISTRATION(first);";
+            stmt.executeUpdate(sql);
+
+            sql = "CREATE INDEX non_prime_index_age ON REGISTRATION(age);";
             stmt.executeUpdate(sql);
             System.out.println("Created table in given database...");
 
