@@ -128,7 +128,8 @@ public class Main {
                 System.out.println("Age:- " + resultSet.getInt(4));
                 System.out.println("============ Result Row =================");
             }
-//            if ((i != 6)) throw new AssertionError();
+            // if ((i != 6)) throw new AssertionError();
+            if ((i != 5)) throw new AssertionError(); // Due to cutom Bitmap
             i = 0;
             System.out.println("4. End many columns or equal to value");
 
