@@ -52,10 +52,10 @@ public class Main {
             sql = "Insert into Registration(id) values (6);";
             stmt.executeUpdate(sql);
 
-            sql = "CREATE INDEX non_prime_index_age ON REGISTRATION(age);" +
-                    "CREATE Hash INDEX prime_index ON REGISTRATION(id);" +
-                    "CREATE Hash INDEX non_prime_index ON REGISTRATION(first);";
-            stmt.executeUpdate(sql);
+//            sql = "CREATE INDEX non_prime_index_age ON REGISTRATION(age);" +
+//                    "CREATE Hash INDEX prime_index ON REGISTRATION(id);" +
+//                    "CREATE Hash INDEX non_prime_index ON REGISTRATION(first);";
+//            stmt.executeUpdate(sql);
             System.out.println("\nCreated table in given database...");
 
 //            sql = "Select * from Registration";
@@ -92,14 +92,23 @@ public class Main {
 
             System.out.println("BOOLEAN OPERATORS==============================================================\n");
 
-            sql = "Select * from Registration where first = 'first' and id = 1";
+            sql = "Select * from Registration where first = 'first' and id = 1 or id = 2";
             ResultSet resultSet = stmt.executeQuery(sql);
             while (resultSet.next()) {
                 System.out.println(resultSet.getInt(1));
                 System.out.println(resultSet.getString(2));
             }
 
-            System.out.println("\n\n");
+            System.out.println("After 0\n\n");
+
+            sql = "Select * from Registration where first = 'first' and age = 12";
+            resultSet = stmt.executeQuery(sql);
+            while (resultSet.next()) {
+                System.out.println(resultSet.getInt(1));
+                System.out.println(resultSet.getString(2));
+            }
+
+            System.out.println("After 1\n\n");
 
             sql = "Select * from Registration where first = 'first' and id = 1 and first = 'first' or id = 2 and first = 'first'";
             ResultSet resultSet2 = stmt.executeQuery(sql);
@@ -108,7 +117,7 @@ public class Main {
                 System.out.println(resultSet2.getString(2));
             }
 
-            System.out.println("\n\n");
+            System.out.println("After 2\n\n");
 
             sql = "Select Count(age) from Registration where first = 'first' and id = 1 and first = 'first' or id = 2 and first = 'first'";
             resultSet2 = stmt.executeQuery(sql);
@@ -116,15 +125,15 @@ public class Main {
                 System.out.println(resultSet2.getInt(1));
             }
 
-            System.out.println("\n\n");
+            System.out.println("After 3\n\n");
 
-            sql = "Select Count(*) from Registration where first = 'first' and id = 1 and first = 'first' or id = 2 and first = 'first' or id = 3";
+            sql = "Select Count(*) from Registration where first = 'first' or id = 1 or first = 'first' or id = 2 or first = 'first' or id = 3";
             resultSet2 = stmt.executeQuery(sql);
             while (resultSet2.next()) {
                 System.out.println(resultSet2.getInt(1));
             }
 
-            System.out.println("\n\n");
+            System.out.println("After 4\n\n");
 
             sql = "Select Count(age) from Registration where first = 'first' and id = 1 and first = 'first' or id = 2 and first = 'first' or id = 3";
             resultSet2 = stmt.executeQuery(sql);
