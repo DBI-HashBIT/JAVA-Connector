@@ -17,6 +17,7 @@ public class Main {
         Connection conn = null;
         Statement stmt = null;
         try {
+            String sql; ResultSet resultSet;
             // STEP 1: Register JDBC driver
             Class.forName(JDBC_DRIVER);
 
@@ -27,136 +28,187 @@ public class Main {
             //STEP 3: Execute a query
             System.out.println("Drop table in given database...");
             stmt = conn.createStatement();
-            String sql =  "DROP TABLE REGISTRATION IF EXISTS;";
+            sql =  "DROP TABLE REGISTRATION IF EXISTS;";
             stmt.executeUpdate(sql);
 
-            sql = "CREATE TABLE REGISTRATION (id INTEGER not NULL, first VARCHAR(255),last VARCHAR(255), age INTEGER, PRIMARY KEY (id));";
+            sql = "CREATE TABLE REGISTRATION (id bigint auto_increment, first VARCHAR(255),last VARCHAR(255), age INTEGER, PRIMARY KEY (id));";
             stmt.executeUpdate(sql);
             System.out.println("Created table in given database...");
 
-            sql = "Insert into Registration(id, first, last, age) values (1, 'first', 'last', 23);";
+            sql = "Insert into Registration(first, last, age) values ('first', 'last', 23);";
             stmt.executeUpdate(sql);
 
-            sql = "Insert into Registration(id, first, last, age) values (2, 'first', 'last', 23);";
+            sql = "Insert into Registration(first, last, age) values ('first', 'last', 23);";
             stmt.executeUpdate(sql);
 
-            sql = "Insert into Registration(id, first, last, age) values (3, 'first', 'last', 23);";
+            sql = "Insert into Registration(first, last, age) values ('first', 'last', 23);";
             stmt.executeUpdate(sql);
 
-//            sql = "Insert into Registration(id, first) values (4, 'ff');";
-//            stmt.executeUpdate(sql);
-
-            sql = "Insert into Registration(id) values (5);";
+            sql = "Insert into Registration(first, last, age) values ('first2', 'last', 23);";
             stmt.executeUpdate(sql);
 
-            sql = "Insert into Registration(id) values (6);";
+            sql = "Insert into Registration() values ();";
             stmt.executeUpdate(sql);
 
-//            sql = "CREATE INDEX non_prime_index_age ON REGISTRATION(age);" +
-//                    "CREATE Hash INDEX prime_index ON REGISTRATION(id);" +
-//                    "CREATE Hash INDEX non_prime_index ON REGISTRATION(first);";
-//            stmt.executeUpdate(sql);
-            System.out.println("\nCreated table in given database...");
+            sql = "Insert into Registration() values ();";
+            stmt.executeUpdate(sql);
 
-//            sql = "Select * from Registration";
-//            stmt.executeQuery(sql);
-//            System.out.println("\nCreated table in given database...");
-//
-//            sql = "Select age from Registration";
-//            stmt.executeQuery(sql);
-//            System.out.println("\nCreated table in given database...");
-//
-//            sql = "Select id from Registration";
-//            stmt.executeQuery(sql);
-//
-//            sql = "Select age, id from Registration";
-//            stmt.executeQuery(sql);
-//            System.out.println("\n");
-//
-//            sql = "Select last from Registration";
-//            stmt.executeQuery(sql);
-            System.out.println("\n COUNT METHODS ====================================================================\n");
+            sql = "Insert into Registration(age) values (31);";
+            stmt.executeUpdate(sql);
 
-//            sql = "Select count(first) from Registration";
-//            ResultSet rs = stmt.executeQuery(sql);
-//            System.out.println("Start of results");
-//            while (rs.next()) {
-//                System.out.println(rs.getObject(1).toString());
-//            }
-//            System.out.println("End of results");
-//            System.out.println("\n");
+            sql = "Insert into Registration(first) values ('first');";
+            stmt.executeUpdate(sql);
 
-//            sql = "Select count(last) from Registration";
-//            stmt.executeQuery(sql);
-//            System.out.println("\n");
+            System.out.println("\nCreated table in given database...\n");
 
-            System.out.println("BOOLEAN OPERATORS==============================================================\n");
-
-            sql = "Select * from Registration where first = 'first' and id = 1 or id = 2";
-            ResultSet resultSet = stmt.executeQuery(sql);
-            while (resultSet.next()) {
-                System.out.println(resultSet.getInt(1));
-                System.out.println(resultSet.getString(2));
-            }
-
-            System.out.println("After 0\n\n");
-
-            sql = "Select * from Registration where first = 'first' and age = 12";
+            System.out.println("===========================================================================================================");
+            System.out.println("1. Start column equal to value");
+            sql = "Select * from Registration where first = 'first'";
             resultSet = stmt.executeQuery(sql);
             while (resultSet.next()) {
-                System.out.println(resultSet.getInt(1));
-                System.out.println(resultSet.getString(2));
+                System.out.println("============ Result Row =================");
+                System.out.println("ID:- " + resultSet.getInt(1));
+                System.out.println("First:- " + resultSet.getString(2));
+                System.out.println("last:- " + resultSet.getString(3));
+                System.out.println("Age:- " + resultSet.getInt(4));
+                System.out.println("============ Result Row =================");
             }
+            System.out.println("1. End column equal to value");
 
-            System.out.println("After 1\n\n");
+            System.out.println("===========================================================================================================");
 
-            sql = "Select * from Registration where first = 'first' and id = 1 and first = 'first' or id = 2 and first = 'first'";
-            ResultSet resultSet2 = stmt.executeQuery(sql);
-            while (resultSet2.next()) {
-                System.out.println(resultSet2.getInt(1));
-                System.out.println(resultSet2.getString(2));
-            }
-
-            System.out.println("After 2\n\n");
-
-            sql = "Select Count(age) from Registration where first = 'first' and id = 1 and first = 'first' or id = 2 and first = 'first'";
-            resultSet2 = stmt.executeQuery(sql);
-            while (resultSet2.next()) {
-                System.out.println(resultSet2.getInt(1));
-            }
-
-            System.out.println("After 3\n\n");
-
-            sql = "Select Count(*) from Registration where first = 'first' or id = 1 or first = 'first' or id = 2 or first = 'first' or id = 3";
-            resultSet2 = stmt.executeQuery(sql);
-            while (resultSet2.next()) {
-                System.out.println(resultSet2.getInt(1));
-            }
-
-            System.out.println("After 4\n\n");
-
-            sql = "Select Count(age) from Registration where first = 'first' and id = 1 and first = 'first' or id = 2 and first = 'first' or id = 3";
-            resultSet2 = stmt.executeQuery(sql);
-            while (resultSet2.next()) {
-                System.out.println(resultSet2.getInt(1));
-            }
-
-//            sql = "Select * from Registration where first = 'first' and age = 23";
-//            stmt.executeQuery(sql);
-//            System.out.println("\nCreated table in given database...\n");
-//
-//            sql = "Select first, age from Registration";
-//            stmt.executeQuery(sql);
-//            System.out.println("\n");
-
-            System.out.println("=============Combine=========================================");
-
-            sql = "Select Count(first), SUM(age) from Registration where first = 'first' and id = 1 or id = 2 and age = 23 or id = 3";
+            System.out.println("2. Select specific column with Start column equal to value");
+            sql = "Select last,age from Registration where first = 'first'";
             resultSet = stmt.executeQuery(sql);
             while (resultSet.next()) {
-                System.out.println(resultSet.getInt(1));
-                System.out.println(resultSet.getInt(2));
+                System.out.println("============ Result Row =================");
+                System.out.println("last:- " + resultSet.getString(1));
+                System.out.println("Age:- " + resultSet.getInt(2));
+                System.out.println("============ Result Row =================");
             }
+            System.out.println("2. End Select specific column with Start column equal to value");
+
+            System.out.println("===========================================================================================================");
+
+            System.out.println("3. Start many columns AND equal to value");
+            sql = "Select * from Registration where first = 'first' and age = 23 and last = 'last'";
+            resultSet = stmt.executeQuery(sql);
+            while (resultSet.next()) {
+                System.out.println("============ Result Row =================");
+                System.out.println("ID:- " + resultSet.getInt(1));
+                System.out.println("First:- " + resultSet.getString(2));
+                System.out.println("last:- " + resultSet.getString(3));
+                System.out.println("Age:- " + resultSet.getInt(4));
+                System.out.println("============ Result Row =================");
+            }
+            System.out.println("3. End many columns AND equal to value");
+
+            System.out.println("===========================================================================================================");
+
+            System.out.println("4. Start many columns or equal to value");
+            sql = "Select * from Registration where first = 'first' or age = 23 or last = 'last' or id = 5";
+            resultSet = stmt.executeQuery(sql);
+            while (resultSet.next()) {
+                System.out.println("============ Result Row =================");
+                System.out.println("ID:- " + resultSet.getInt(1));
+                System.out.println("First:- " + resultSet.getString(2));
+                System.out.println("last:- " + resultSet.getString(3));
+                System.out.println("Age:- " + resultSet.getInt(4));
+                System.out.println("============ Result Row =================");
+            }
+            System.out.println("4. End many columns or equal to value");
+
+            System.out.println("===========================================================================================================");
+
+            System.out.println("5. Start many columns and/or equal to value");
+            sql = "Select age,last from Registration where first = 'first' and age = 23 or last = 'last' and id = 5";
+            resultSet = stmt.executeQuery(sql);
+            while (resultSet.next()) {
+                System.out.println("============ Result Row =================");
+                System.out.println("last:- " + resultSet.getString(2));
+                System.out.println("Age:- " + resultSet.getInt(1));
+                System.out.println("============ Result Row =================");
+            }
+            System.out.println("5. End many columns and/or equal to value");
+
+            System.out.println("===========================================================================================================");
+
+            System.out.println("6. Select specific column count with Start column equal to value");
+            sql = "Select Count(last),SUM(age),Count(first) from Registration where first = 'first'";
+            resultSet = stmt.executeQuery(sql);
+            while (resultSet.next()) {
+                System.out.println("============ Result Row =================");
+                System.out.println("Count(last):- " + resultSet.getInt(1));
+                System.out.println("SUM(age):- " + resultSet.getInt(2));
+                System.out.println("COunt(first):- " + resultSet.getInt(3));
+                System.out.println("============ Result Row =================");
+            }
+            System.out.println("6. End Select specific column count with Start column equal to value");
+
+            System.out.println("===========================================================================================================");
+
+            System.out.println("7. Select specific columns count with Start column equal to value");
+            sql = "Select Count(last),SUM(age),Count(first) from Registration where first = 'first' and age = 23 or age = 23 and first = 'first'";
+            resultSet = stmt.executeQuery(sql);
+            while (resultSet.next()) {
+                System.out.println("============ Result Row =================");
+                System.out.println("Count(last):- " + resultSet.getInt(1));
+                System.out.println("SUM(age):- " + resultSet.getInt(2));
+                System.out.println("COunt(first):- " + resultSet.getInt(3));
+                System.out.println("============ Result Row =================");
+            }
+            System.out.println("7. End Select specific columns count with Start column equal to value");
+
+            System.out.println("===========================================================================================================");
+
+            System.out.println("8. Select specific columns count with Start column equal to value");
+            sql = "Select Count(last),SUM(age),Count(first) from Registration where age = 31";
+            resultSet = stmt.executeQuery(sql);
+            while (resultSet.next()) {
+                System.out.println("============ Result Row =================");
+                System.out.println("Count(last):- " + resultSet.getInt(1));
+                System.out.println("SUM(age):- " + resultSet.getInt(2));
+                System.out.println("COunt(first):- " + resultSet.getInt(3));
+                System.out.println("============ Result Row =================");
+            }
+            System.out.println("8. End Select specific columns count with Start column equal to value");
+
+            System.out.println("=======================Emty Queries Started====================================================================================");
+            
+            System.out.println("===========================================================================================================");
+
+            System.out.println("9. Start Empty many columns and/or equal to value");
+            sql = "Select age,last from Registration where first = 'first' and age = 23 and last = 'last' and id = 5";
+            resultSet = stmt.executeQuery(sql);
+            if (resultSet.next() == false) {
+                System.out.println("EMPTY RESLUT SET AND ITS EXPECTED");
+            }
+            while (resultSet.next()) {
+                System.out.println("============ Result Row =================");
+                System.out.println("last:- " + resultSet.getString(2));
+                System.out.println("Age:- " + resultSet.getInt(1));
+                System.out.println("============ Result Row =================");
+            }
+            System.out.println("9. End Empty many columns and/or equal to value");
+
+            System.out.println("===========================================================================================================");
+
+            System.out.println("10. Start Empty Count and SUm");
+            sql = "Select Count(last),SUM(age),Count(first) from Registration where first = 'firstt' and age = 23 and age = 23 and first = 'first'";
+            resultSet = stmt.executeQuery(sql);
+            while (resultSet.next()) {
+                System.out.println("============ Result Row =================");
+                System.out.println("Count(last):- " + resultSet.getInt(1));
+                System.out.println("SUM(age):- " + resultSet.getInt(2));
+                System.out.println("COunt(first):- " + resultSet.getInt(3));
+                System.out.println("============ Result Row =================");
+            }
+            System.out.println("10. End Empty Count and Sun");
+
+            System.out.println("===========================================================================================================");
+
+            System.out.println("=======================Emty Queries Ended======================================================================================");
+            
 
             // STEP 4: Clean-up environment
             stmt.close();
