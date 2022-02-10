@@ -59,6 +59,8 @@ public class Main {
             sql = "Insert into Registration(first) values ('first');";
             stmt.executeUpdate(sql);
 
+            int i = 0;
+
             System.out.println("\nCreated table in given database...\n");
 
             System.out.println("===========================================================================================================");
@@ -66,6 +68,7 @@ public class Main {
             sql = "Select * from Registration where first = 'first'";
             resultSet = stmt.executeQuery(sql);
             while (resultSet.next()) {
+                i++;
                 System.out.println("============ Result Row =================");
                 System.out.println("ID:- " + resultSet.getInt(1));
                 System.out.println("First:- " + resultSet.getString(2));
@@ -73,6 +76,8 @@ public class Main {
                 System.out.println("Age:- " + resultSet.getInt(4));
                 System.out.println("============ Result Row =================");
             }
+            if ((i != 4)) throw new AssertionError();
+            i = 0;
             System.out.println("1. End column equal to value");
 
             System.out.println("===========================================================================================================");
@@ -81,11 +86,14 @@ public class Main {
             sql = "Select last,age from Registration where first = 'first'";
             resultSet = stmt.executeQuery(sql);
             while (resultSet.next()) {
+                i++;
                 System.out.println("============ Result Row =================");
                 System.out.println("last:- " + resultSet.getString(1));
                 System.out.println("Age:- " + resultSet.getInt(2));
                 System.out.println("============ Result Row =================");
             }
+            if ((i != 4)) throw new AssertionError();
+            i = 0;
             System.out.println("2. End Select specific column with Start column equal to value");
 
             System.out.println("===========================================================================================================");
@@ -94,6 +102,7 @@ public class Main {
             sql = "Select * from Registration where first = 'first' and age = 23 and last = 'last'";
             resultSet = stmt.executeQuery(sql);
             while (resultSet.next()) {
+                i++;
                 System.out.println("============ Result Row =================");
                 System.out.println("ID:- " + resultSet.getInt(1));
                 System.out.println("First:- " + resultSet.getString(2));
@@ -101,14 +110,17 @@ public class Main {
                 System.out.println("Age:- " + resultSet.getInt(4));
                 System.out.println("============ Result Row =================");
             }
+            if ((i != 3)) throw new AssertionError();
+            i = 0;
             System.out.println("3. End many columns AND equal to value");
 
             System.out.println("===========================================================================================================");
 
             System.out.println("4. Start many columns or equal to value");
-            sql = "Select * from Registration where first = 'first' or age = 23 or last = 'last' or id = 5";
+            sql = "Select * from Registration where first = 'first' or age = 23 or last = 'last' or id = 5"; //TODO CHECK
             resultSet = stmt.executeQuery(sql);
             while (resultSet.next()) {
+                i++;
                 System.out.println("============ Result Row =================");
                 System.out.println("ID:- " + resultSet.getInt(1));
                 System.out.println("First:- " + resultSet.getString(2));
@@ -116,12 +128,14 @@ public class Main {
                 System.out.println("Age:- " + resultSet.getInt(4));
                 System.out.println("============ Result Row =================");
             }
+//            if ((i != 6)) throw new AssertionError();
+            i = 0;
             System.out.println("4. End many columns or equal to value");
 
             System.out.println("===========================================================================================================");
 
             System.out.println("5. Start many columns and/or equal to value");
-            sql = "Select age,last from Registration where first = 'first' and age = 23 or last = 'last' and id = 5";
+            sql = "Select age,last from Registration where first = 'first' and age = 23 or last = 'last' and id = 5"; //TODO CHECK
             resultSet = stmt.executeQuery(sql);
             while (resultSet.next()) {
                 System.out.println("============ Result Row =================");
@@ -129,6 +143,8 @@ public class Main {
                 System.out.println("Age:- " + resultSet.getInt(1));
                 System.out.println("============ Result Row =================");
             }
+//            if ((i != 3)) throw new AssertionError();
+            i = 0;
             System.out.println("5. End many columns and/or equal to value");
 
             System.out.println("===========================================================================================================");
@@ -148,7 +164,7 @@ public class Main {
             System.out.println("===========================================================================================================");
 
             System.out.println("7. Select specific columns count with Start column equal to value");
-            sql = "Select Count(last),SUM(age),Count(first) from Registration where first = 'first' and age = 23 or age = 23 and first = 'first'";
+            sql = "Select Count(last),SUM(age),Count(first) from Registration where first = 'first' and age = 23 or age = 23 and first = 'first'";//TODO CHECK
             resultSet = stmt.executeQuery(sql);
             while (resultSet.next()) {
                 System.out.println("============ Result Row =================");
