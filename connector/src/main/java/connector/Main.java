@@ -165,7 +165,7 @@ public class Main {
             System.out.println("===========================================================================================================");
 
             System.out.println("7. Select specific columns count with Start column equal to value");
-            sql = "Select Count(last),SUM(age),Count(first) from Registration where first = 'first' and age = 23 or age = 23 and first = 'first'";//TODO CHECK
+            sql = "Select Count(last),SUM(age),Count(first) from Registration where first = 'first' and age = 23 or last = 'last' and first = 'first'";//TODO CHECK
             resultSet = stmt.executeQuery(sql);
             while (resultSet.next()) {
                 System.out.println("============ Result Row =================");
@@ -191,7 +191,7 @@ public class Main {
             System.out.println("8. End Select specific columns count with Start column equal to value");
 
             System.out.println("=======================Emty Queries Started====================================================================================");
-            
+
             System.out.println("===========================================================================================================");
 
             System.out.println("9. Start Empty many columns and/or equal to value");
