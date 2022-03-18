@@ -43,6 +43,10 @@ public class Main {
             stmt.executeUpdate(sql);
             System.out.println("Created table in given database...");
 
+            sql = "CREATE Index secondary_index on REGISTRATION(first);";
+            stmt.executeUpdate(sql);
+            System.out.println("Created index in given database...");
+
             sql = "Insert into Registration2() values ();Insert into Registration2() values ();Insert into Registration2() values ();Insert into Registration2() values ();Insert into Registration2() values ();";
             stmt.executeUpdate(sql);
 
@@ -74,64 +78,70 @@ public class Main {
 
             System.out.println("\nCreated table in given database...\n");
 
-            // System.out.println("===========================================================================================================");
-            // System.out.println("1. Start column equal to value");
-            // sql = "Select * from Registration where first = 'first'";
-            // resultSet = stmt.executeQuery(sql);
-            // while (resultSet.next()) {
-            //     i++;
-            //     System.out.println("============ Result Row =================");
-            //     System.out.println("ID:- " + resultSet.getInt(1));
-            //     System.out.println("First:- " + resultSet.getString(2));
-            //     System.out.println("last:- " + resultSet.getString(3));
-            //     System.out.println("Age:- " + resultSet.getInt(4));
-            //     System.out.println("============ Result Row =================");
-            // }
-            // if ((i != 4)) throw new AssertionError();
-            // i = 0;
-            // System.out.println("1. End column equal to value");
+             System.out.println("===========================================================================================================");
+             System.out.println("1. Start column equal to value");
+             sql = "Select * from Registration where first = 'first'";
+             resultSet = stmt.executeQuery(sql);
+             while (resultSet.next()) {
+                 i++;
+                 System.out.println("============ Result Row =================");
+                 System.out.println("ID:- " + resultSet.getInt(1));
+                 System.out.println("First:- " + resultSet.getString(2));
+                 System.out.println("last:- " + resultSet.getString(3));
+                 System.out.println("Age:- " + resultSet.getInt(4));
+                 System.out.println("============ Result Row =================");
+             }
+             if ((i != 4)) throw new AssertionError();
+             i = 0;
+             System.out.println("1. End column equal to value");
 
-            System.out.println("===========================================================================================================");
+            System.out.println("1.===========================================================================================================");
 
             sql = "Select 1";
             resultSet = stmt.executeQuery(sql);
 
-            System.out.println("===========================================================================================================");
+            System.out.println("2.===========================================================================================================");
 
             sql = "Select Count(age) from Registration";
             resultSet = stmt.executeQuery(sql);
 
-            System.out.println("===========================================================================================================");
+            System.out.println("3.===========================================================================================================");
 
             sql = "Select Sum(age) from Registration";
             resultSet = stmt.executeQuery(sql);
 
-            System.out.println("===========================================================================================================");
-            
+            System.out.println("4.===========================================================================================================");
+
             sql = "Select Distinct age from Registration where first = 'first'";
             resultSet = stmt.executeQuery(sql);
 
-            System.out.println("===========================================================================================================");
+            System.out.println("5.===========================================================================================================");
 
             sql = "Select Distinct SUM(age) from Registration";
             resultSet = stmt.executeQuery(sql);
 
-            System.out.println("===========================================================================================================");
+            System.out.println("6.===========================================================================================================");
 
             sql = "Select Distinct SUM(age) from Registration where age = 23";
             resultSet = stmt.executeQuery(sql);
 
-            System.out.println("===========================================================================================================");
+            System.out.println("7.===========================================================================================================");
 
             sql = "Select first, avg(age) from Registration group by(first)";
             resultSet = stmt.executeQuery(sql);
+            while (resultSet.next()) {
+                System.out.println("==============Result Row============================");
+                System.out.println(resultSet.getString(1));
+                System.out.println(resultSet.getInt(2));
+                System.out.println("==============Result Row============================");
+            }
 
-            System.out.println("===========================================================================================================");
+            System.out.println("8.===========================================================================================================");
 
             sql = "Select distinct age from Registration where first = 'first'";
             resultSet = stmt.executeQuery(sql);
 
-            System.out.println("=================================================Natural Join==========================================================");
+            System.out.println("9.=================================================Natural Join==========================================================");
 
             sql = "Select distinct age from Registration natural Join Registration2 where first = 'first' or first = 'first2' or first = NULL";
             resultSet = stmt.executeQuery(sql);
@@ -142,17 +152,34 @@ public class Main {
                 System.out.println(resultSet.getInt((0)));
             }
 
-            System.out.println("================================================= Order By ==========================================================");
+            System.out.println("10.================================================= Order By ==========================================================");
 
             sql = "Select age from Registration where first = 'first' order by age";
             resultSet = stmt.executeQuery(sql);
 
-            System.out.println("================================================= Order By ==========================================================");
+            System.out.println("11.================================================= Order By ==========================================================");
 
-            // sql = "Select * from Registration where first = 'first'";
-            // resultSet = stmt.executeQuery(sql);
+            sql = "Select first, avg(age) from Registration where first = 'first2' group by(first) having avg(age) > 0";
+            resultSet = stmt.executeQuery(sql);
 
-            // System.out.println("===========================================================================================================");
+            while (resultSet.next()) {
+                System.out.println("==============Result Row============================");
+                System.out.println(resultSet.getString(1));
+                System.out.println(resultSet.getInt(2));
+                System.out.println("==============Result Row============================");
+            }
+
+            System.out.println("12.===========================================================================================================");
+
+            sql = "DELETE FROM Registration WHERE id = 1;";
+            stmt.executeUpdate(sql);
+
+
+            sql = "DELETE FROM Registration WHERE id = 3;";
+            stmt.executeUpdate(sql);
+
+            sql = "DELETE FROM Registration WHERE id = 2;";
+            stmt.executeUpdate(sql);
 
 
             // STEP 4: Clean-up environment
