@@ -136,12 +136,109 @@ public class Main {
             sql = "Select first,last from Registration where first = 'first159'";
             resultSet = stmt.executeQuery(sql);
 
-            while (resultSet.next()) {
-                System.out.println("==============Result Row============================");
-                System.out.println(resultSet.getString(1));
-                System.out.println(resultSet.getString(2));
-                System.out.println("==============Result Row============================");
+            System.out.println("1.===========================================================================================================");
+
+//            sql = "Select 1";
+//            resultSet = stmt.executeQuery(sql);
+//
+//            System.out.println("2.===========================================================================================================");
+//
+//            sql = "Select Count(first) from Registration";
+//            resultSet = stmt.executeQuery(sql);
+//
+//            System.out.println("3.===========================================================================================================");
+//
+//            sql = "Select Sum(age) from Registration";
+//            resultSet = stmt.executeQuery(sql);
+
+            System.out.println("4.===========================================================================================================");
+
+            sql = "Select Distinct age from Registration where first = 'first159'";
+            resultSet = stmt.executeQuery(sql);
+
+            System.out.println("5.===========================================================================================================");
+
+//            sql = "Select Distinct SUM(age) from Registration";
+//            resultSet = stmt.executeQuery(sql);
+
+            System.out.println("6.===========================================================================================================");
+
+            sql = "Select Distinct SUM(age) from Registration where last = 'last159'";
+            resultSet = stmt.executeQuery(sql);
+
+            System.out.println("7.===========================================================================================================");
+
+//            sql = "Select first, avg(age) from Registration group by(first)";
+//            resultSet = stmt.executeQuery(sql);
+//            while (resultSet.next()) {
+//                System.out.println("==============Result Row============================");
+//                System.out.println(resultSet.getString(1));
+//                System.out.println(resultSet.getInt(2));
+//                System.out.println("==============Result Row============================");
+//            }
+//
+            System.out.println("8.===========================================================================================================");
+
+            sql = "Select distinct age from Registration where first = 'first159'";
+            resultSet = stmt.executeQuery(sql);
+
+            System.out.println("9.=================================================Natural Join==========================================================");
+
+            sql = "Select distinct age from Registration where first = 'first159' or last = 'last2'";
+            resultSet = stmt.executeQuery(sql);
+            if (!resultSet.next()) {
+                System.out.println("NATURAL JOIN IS EMPTY");
             }
+            while (resultSet.next()) {
+                System.out.println(resultSet.getInt((0)));
+            }
+
+//            System.out.println("10.================================================= Order By ==========================================================");
+//
+////            sql = "Select age from Registration where first = 'first' order by age";
+////            resultSet = stmt.executeQuery(sql);
+////
+////            System.out.println("11.================================================= Order By ==========================================================");
+////
+////            sql = "Select first, avg(age) from Registration where first = 'first2' group by(first) having avg(age) > 0";
+////            resultSet = stmt.executeQuery(sql);
+////
+////            while (resultSet.next()) {
+////                System.out.println("==============Result Row============================");
+////                System.out.println(resultSet.getString(1));
+////                System.out.println(resultSet.getInt(2));
+////                System.out.println("==============Result Row============================");
+////            }
+//
+//            System.out.println("12.===========================================================================================================");
+//
+////            sql = "DELETE FROM Registration WHERE id = 1;";
+////            stmt.executeUpdate(sql);
+////
+////
+////            sql = "DELETE FROM Registration WHERE id = 3;";
+////            stmt.executeUpdate(sql);
+////
+////            sql = "DELETE FROM Registration WHERE id = 2;";
+////            stmt.executeUpdate(sql);
+//
+////            while (resultSet.next()) {
+////                System.out.println("==============Result Row============================");
+////                System.out.println(resultSet.getString(1));
+////                System.out.println(resultSet.getString(2));
+////                System.out.println("==============Result Row============================");
+////            }
+//
+//            System.out.println("=====================================13=======================================================");
+//
+//            sql = "Select distinct age from Registration where first = 'first159' and first = 'first159' and last = 'last159'";
+//            resultSet = stmt.executeQuery(sql);
+//            if (!resultSet.next()) {
+//                System.out.println("NATURAL JOIN IS EMPTY");
+//            }
+//            while (resultSet.next()) {
+//                System.out.println(resultSet.getInt((0)));
+//            }
 
             // STEP 4: Clean-up environment
             stmt.close();
@@ -166,38 +263,3 @@ public class Main {
         } //end try
     }
 }
-
-//first26 :- [0 , 1 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ]
-//first37 :- [0 , 0 , 1 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 0 , 0 , 0 ]
-//first48 :- [0 , 0 , 0 , 1 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 0 , 0 ]
-//NULL :- [0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 1 , 1 , 1 , 0 ]
-//first13 :- [0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 1 ]
-//first159 :- [1 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 0 ]
-
-//update 6 8 1 3
-
-//first26 :- [0 , 1 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ]
-//first37 :- [0 , 0 , 1 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 1 ]
-//first48 :- [0 , 0 , 0 , 1 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ]
-//NULL :- [0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 1 , 1 , 1 , 0 , 0 , 0 , 0 , 0 ]
-//first13 :- [0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 0 ]
-//update8 :- [0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 1 , 0 , 0 ]
-//update6 :- [0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 1 , 0 , 0 , 0 ]
-//first159 :- [1 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 1 , 0 ]
-
-
-//last26 :- [0 , 1 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ]
-//last37 :- [0 , 0 , 1 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 0 , 0 , 0 ]
-//last48 :- [0 , 0 , 0 , 1 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 0 , 0 ]
-//NULL :- [0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 1 , 1 , 1 , 1 ]
-//last159 :- [1 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 0 ]
-
-//update 6 8 1 3
-
-//last26 :- [0 , 1 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 1 , 0 , 0 , 0 ]
-//last37 :- [0 , 0 , 1 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ]
-//last48 :- [0 , 0 , 0 , 1 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 1 , 0 , 0 ]
-//NULL :- [0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 1 , 1 , 1 , 1 , 0 , 0 , 0 , 0 ]
-//update3 :- [0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 1 ]
-//last159 :- [1 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ]
-//update1 :- [0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 1 , 0 ]
