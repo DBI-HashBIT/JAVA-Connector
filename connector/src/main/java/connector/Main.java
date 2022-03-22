@@ -122,16 +122,19 @@ public class Main {
             System.out.println("----------------------------------------------------DELETE----------------------------------------------------------------------");
 //
 //
-            sql = "DELETE FROM Registration WHERE id = 3;";
-            stmt.executeUpdate(sql);
-
-            sql = "DELETE FROM Registration WHERE id = 10;";
-            stmt.executeUpdate(sql);
-
-            sql = "DELETE FROM Registration WHERE id = 1;";
-            stmt.executeUpdate(sql);
+//            sql = "DELETE FROM Registration WHERE id = 3;";
+//            stmt.executeUpdate(sql);
+//
+//            sql = "DELETE FROM Registration WHERE id = 10;";
+//            stmt.executeUpdate(sql);
+//
+//            sql = "DELETE FROM Registration WHERE id = 1;";
+//            stmt.executeUpdate(sql);
 //
             System.out.println("-----------------------------------------------------------SELECT-------------------------------------------------------");
+
+            sql = "Select first from Registration where first = 'first'";
+            resultSet = stmt.executeQuery(sql);
 
             // STEP 4: Clean-up environment
             stmt.close();
