@@ -101,23 +101,23 @@ public class Main {
 
             System.out.println("-----------------------------------------------------UPDATE---------------------------------------------------------------------");
 
-            sql = "UPDATE Registration SET  first = 'update6', last = 'update6' WHERE ID = 6;";
-            stmt.executeUpdate(sql);
-
-            sql = "UPDATE Registration SET  first = 'update8', last = 'update8' WHERE ID = 8;";
-            stmt.executeUpdate(sql);
-
-            sql = "UPDATE Registration SET  first = 'update1', last = 'update1' WHERE ID = 1;";
-            stmt.executeUpdate(sql);
-
-            sql = "UPDATE Registration SET  first = 'update3', last = 'update3' WHERE ID = 3;";
-            stmt.executeUpdate(sql);
-
-            sql = "UPDATE Registration SET  first = 'first13', last = 'last13' WHERE ID = 10;";
-            stmt.executeUpdate(sql);
-
-            sql = "UPDATE Registration SET  first = NULL, last = NULL WHERE ID = 11;";
-            stmt.executeUpdate(sql);
+//            sql = "UPDATE Registration SET  first = 'update6', last = 'update6' WHERE ID = 6;";
+//            stmt.executeUpdate(sql);
+//
+//            sql = "UPDATE Registration SET  first = 'update8', last = 'update8' WHERE ID = 8;";
+//            stmt.executeUpdate(sql);
+//
+//            sql = "UPDATE Registration SET  first = 'update1', last = 'update1' WHERE ID = 1;";
+//            stmt.executeUpdate(sql);
+//
+//            sql = "UPDATE Registration SET  first = 'update3', last = 'update3' WHERE ID = 3;";
+//            stmt.executeUpdate(sql);
+//
+//            sql = "UPDATE Registration SET  first = 'first13', last = 'last13' WHERE ID = 10;";
+//            stmt.executeUpdate(sql);
+//
+//            sql = "UPDATE Registration SET  first = NULL, last = NULL WHERE ID = 11;";
+//            stmt.executeUpdate(sql);
 
             System.out.println("----------------------------------------------------DELETE----------------------------------------------------------------------");
 //
@@ -133,8 +133,15 @@ public class Main {
 //
             System.out.println("-----------------------------------------------------------SELECT-------------------------------------------------------");
 
-            sql = "Select first from Registration where first = 'first'";
+            sql = "Select first,last from Registration where first = 'first159'";
             resultSet = stmt.executeQuery(sql);
+
+            while (resultSet.next()) {
+                System.out.println("==============Result Row============================");
+                System.out.println(resultSet.getString(1));
+                System.out.println(resultSet.getString(2));
+                System.out.println("==============Result Row============================");
+            }
 
             // STEP 4: Clean-up environment
             stmt.close();
