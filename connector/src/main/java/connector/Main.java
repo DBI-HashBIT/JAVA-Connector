@@ -184,7 +184,7 @@ public class Main {
 
             System.out.println("9.=================================================Natural Join==========================================================");
 
-            sql = "Select distinct age from Registration where first = 'first159' or last = 'last2'";
+            sql = "Select distinct age from Registration where first = 'first159' or last = 'last159'";
             resultSet = stmt.executeQuery(sql);
             if (!resultSet.next()) {
                 System.out.println("NATURAL JOIN IS EMPTY");
@@ -229,16 +229,16 @@ public class Main {
 ////                System.out.println("==============Result Row============================");
 ////            }
 //
-//            System.out.println("=====================================13=======================================================");
-//
-//            sql = "Select distinct age from Registration where first = 'first159' and first = 'first159' and last = 'last159'";
-//            resultSet = stmt.executeQuery(sql);
-//            if (!resultSet.next()) {
-//                System.out.println("NATURAL JOIN IS EMPTY");
-//            }
-//            while (resultSet.next()) {
-//                System.out.println(resultSet.getInt((0)));
-//            }
+            System.out.println("=====================================13=======================================================");
+
+            sql = "Select distinct age from Registration where first = 'first159' and first = 'first159' and last = 'last159'";
+            resultSet = stmt.executeQuery(sql);
+            if (!resultSet.next()) {
+                System.out.println("NATURAL JOIN IS EMPTY");
+            }
+            while (resultSet.next()) {
+                System.out.println(resultSet.getInt((0)));
+            }
 
             // STEP 4: Clean-up environment
             stmt.close();
