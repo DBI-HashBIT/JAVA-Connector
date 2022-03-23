@@ -35,210 +35,234 @@ public class Main {
             sql =  "DROP TABLE REGISTRATION2 IF EXISTS;";
             stmt.executeUpdate(sql);
 
-            sql = "CREATE TABLE REGISTRATION (id bigint auto_increment, first VARCHAR(255),last VARCHAR(255), age INTEGER, PRIMARY KEY (id));";
+            /*
+             This table contains
+             insert operations before index creation and after index creation
+             update and delete operations
+             */
+
+            sql = "CREATE TABLE REGISTRATION (id bigint auto_increment, first VARCHAR(255), middle VARCHAR(255), last VARCHAR(255), age INTEGER, checkcolumn INTEGER, PRIMARY KEY (id));";
             stmt.executeUpdate(sql);
             System.out.println("Created table in given database...");
 
-            sql = "CREATE TABLE REGISTRATION2 (id bigint auto_increment, PRIMARY KEY (id));";
-            stmt.executeUpdate(sql);
-            System.out.println("Created table in given database...");
-
-            sql = "Insert into Registration(first, last, age) values ('first159', 'last159', 23);";
+            sql = "Insert into Registration(first, middle, last, age, checkcolumn) values ('first13', 'middle1', 'last14', 1, 1);";
             stmt.executeUpdate(sql);
 
-            sql = "Insert into Registration(first, last, age) values ('first26', 'last26', 23);";
+            sql = "Insert into Registration(first, middle, last, age, checkcolumn) values ('first24', 'middle2', 'last25', 2, 2);";
             stmt.executeUpdate(sql);
 
-
-            sql = "Insert into Registration(first, last, age) values ('first37', 'last37', 23);";
-            stmt.executeUpdate(sql);
-
-            sql = "Insert into Registration(first, last, age) values ('first48', 'last48', 23);";
-            stmt.executeUpdate(sql);
-
-
-            sql = "Insert into Registration(first, last, age) values ('first159', 'last159', 23);";
-            stmt.executeUpdate(sql);
-
-            sql = "Insert into Registration(first, last, age) values ('first26', 'last26', 23);";
-            stmt.executeUpdate(sql);
-
+            /*
+             Create index for first column
+             */
 
             sql = "CREATE hashbit Index secondary_index on REGISTRATION(first);";
             stmt.executeUpdate(sql);
             System.out.println("Created index in given database...");
 
-            sql = "CREATE hashbit Index secondary_index_last on REGISTRATION(last);";
+            sql = "Insert into Registration(first, middle, last, age, checkcolumn) values ('first13', 'middle3', 'last36', 3, 3);";
+            stmt.executeUpdate(sql);
+
+            /*
+             Create index for last column
+             */
+
+            sql = "CREATE hashbit Index secondary_index on REGISTRATION(last);";
             stmt.executeUpdate(sql);
             System.out.println("Created index in given database...");
 
-            System.out.println("?????????????????????????????  This is Part 02 ????????????????????????????????????????????????????????");
+            sql = "Insert into Registration(first, middle, last, age, checkcolumn) values ('first24', 'middle4', 'last14', 4, 4);";
+            stmt.executeUpdate(sql);
 
-            sql = "Insert into Registration(first, last, age) values ('first37', 'last37', 23);";
+            /*
+             Create index for middle column
+             */
+
+            sql = "CREATE hashbit Index secondary_index on REGISTRATION(middle);";
+            stmt.executeUpdate(sql);
+            System.out.println("Created index in given database...");
+
+            sql = "Insert into Registration(first, middle, last, age, checkcolumn) values ('first35', 'middle5', 'last25', 5, 5);";
+            stmt.executeUpdate(sql);
+
+//            /*
+//            Check Error for non varchar column
+//             */
+//
+//            try {
+//                sql = "CREATE hashbit Index secondary_index on REGISTRATION(age);";
+//                stmt.executeUpdate(sql);
+//                System.out.println("Created index in given database...");
+//                System.out.println("Error expected for age column");
+//                System.exit(1);
+//            } catch (Exception exception) {
+//
+//            }
+
+            sql = "Insert into Registration(first, middle, last, age, checkcolumn) values ('first6', 'middle6', 'last36', 6, 6);";
             stmt.executeUpdate(sql);
 
 
-            sql = "Insert into Registration(first, last, age) values ('first48', 'last48', 23);";
-            stmt.executeUpdate(sql);
+            /*
+             This section need to contain update indexes related test cases
+             */
+            System.out.println("============================================= Start Update Index ===================================================");
+            System.out.println("============================================= End Update Index ===================================================");
+
+            /*
+             This section need to contain delete indexes related test cases
+             */
+            System.out.println("============================================= Start Delete Index ===================================================");
+            System.out.println("============================================= End Delete Index ===================================================");
+
+            /*
+                Search rows with indexes
+             */
+            System.out.println("============================================= Start Search Index ===================================================");
+
+            sql = "Select distinct checkcolumn from Registration where first = 'first13'";
+            resultSet = stmt.executeQuery(sql);
+            check(resultSet, new int[]{1, 3}, 1, 1);
+
+            //AND Operations
+
+            sql = "Select distinct checkcolumn from Registration where first = 'first13' and last = 'last14'";
+            resultSet = stmt.executeQuery(sql);
+            check(resultSet, new int[]{1}, 2, 1);
+
+            sql = "Select * from Registration where first = 'first13' and last = 'last14' and middle = 'middle1'";
+            resultSet = stmt.executeQuery(sql);
+            check(resultSet, new int[]{1}, 3);
+
+            sql = "Select * from Registration where first = 'first131'";
+            resultSet = stmt.executeQuery(sql);
+            check(resultSet, new int[]{0}, 4, true);
+
+            sql = "Select * from Registration where first = 'first13' and last = 'last25'";
+            resultSet = stmt.executeQuery(sql);
+            check(resultSet, new int[]{0}, 5, true);
+
+            sql = "Select * from Registration where first = 'first13' and last = 'last14' and middle = 'middle2'";
+            resultSet = stmt.executeQuery(sql);
+            check(resultSet, new int[]{0}, 6, true);
+
+            sql = "Select * from Registration where first = 'first13' and last = 'last141' and middle = 'middle1'";
+            resultSet = stmt.executeQuery(sql);
+            check(resultSet, new int[]{0}, 7, true);
+
+            // OR Operations
+
+            sql = "Select distinct checkcolumn from Registration where first = 'first13' or last = 'last14'";
+            resultSet = stmt.executeQuery(sql);
+            check(resultSet, new int[]{1, 3, 4}, 8, 1);
+
+            sql = "Select distinct checkcolumn from Registration where first = 'first13' or last = 'last14' or middle = 'middle1'";
+            resultSet = stmt.executeQuery(sql);
+            check(resultSet, new int[]{1, 3, 4}, 9, 1);
+
+            sql = "Select * from Registration where first = 'first13' or last = 'last25'";
+            resultSet = stmt.executeQuery(sql);
+            check(resultSet, new int[]{1, 2, 3, 5}, 10);
+
+            sql = "Select * from Registration where first = 'first13' or last = 'last14' or middle = 'middle2'";
+            resultSet = stmt.executeQuery(sql);
+            check(resultSet, new int[]{1, 2, 3 , 4}, 11);
+
+            sql = "Select * from Registration where first = 'first13' or last = 'last141' or middle = 'middle1'";
+            resultSet = stmt.executeQuery(sql);
+            check(resultSet, new int[]{1, 3}, 12);
+
+            System.out.println("============================================= End Search Index ===================================================");
+
+            sql = "Select SUM(checkcolumn) from Registration where first = 'first13'";
+            resultSet = stmt.executeQuery(sql);
+            check(resultSet, new int[]{4}, 13, 1);
+
+            //AND Operations
+
+            sql = "Select COUNT(checkcolumn) from Registration where first = 'first13' and last = 'last14'";
+            resultSet = stmt.executeQuery(sql);
+            check(resultSet, new int[]{1}, 14, 1);
+
+            sql = "Select COUNT(*) from Registration where first = 'first13' and last = 'last14' and middle = 'middle1'";
+            resultSet = stmt.executeQuery(sql);
+            check(resultSet, new int[]{1}, 15, 1);
+
+            sql = "Select COUNT(*) from Registration where first = 'first131'";
+            resultSet = stmt.executeQuery(sql);
+            check(resultSet, new int[]{0}, 16, 1);
+
+            sql = "Select COUNT(*) from Registration where first = 'first13' and last = 'last25'";
+            resultSet = stmt.executeQuery(sql);
+            check(resultSet, new int[]{0}, 17, 1);
+
+            sql = "Select COUNT(*) from Registration where first = 'first13' and last = 'last14' and middle = 'middle2'";
+            resultSet = stmt.executeQuery(sql);
+            check(resultSet, new int[]{0}, 18, 1);
+
+            sql = "Select COUNT(*) from Registration where first = 'first13' and last = 'last141' and middle = 'middle1'";
+            resultSet = stmt.executeQuery(sql);
+            check(resultSet, new int[]{0}, 19, 1);
+
+            // OR Operations
+
+            sql = "Select SUM(checkcolumn) from Registration where first = 'first13' or last = 'last14'";
+            resultSet = stmt.executeQuery(sql);
+            check(resultSet, new int[]{8}, 20, 1);
+
+            sql = "Select SUM(checkcolumn) from Registration where first = 'first13' or last = 'last14' or middle = 'middle1'";
+            resultSet = stmt.executeQuery(sql);
+            check(resultSet, new int[]{8}, 21, 1);
+
+            sql = "Select COUNT(*) from Registration where first = 'first13' or last = 'last25'";
+            resultSet = stmt.executeQuery(sql);
+            check(resultSet, new int[]{4}, 22,1);
+
+            sql = "Select COUNT(*) from Registration where first = 'first13' or last = 'last14' or middle = 'middle2'";
+            resultSet = stmt.executeQuery(sql);
+            check(resultSet, new int[]{4}, 23,1);
+
+            sql = "Select Count(*) from Registration where first = 'first24' or last = 'last141' or middle = 'middle1'";
+            resultSet = stmt.executeQuery(sql);
+            check(resultSet, new int[]{3}, 24,1);
+
+            System.out.println("============================================= Start Aggregate Function Search Index ===================================================");
 
 
-            sql = "Insert into Registration(first, last, age) values ('first159', 'last159', 23);";
-            stmt.executeUpdate(sql);
 
-            sql = "Insert into Registration() values ();";
-            stmt.executeUpdate(sql);
+            System.out.println("============================================= End Aggregate Function Search Index ===================================================");
 
-            sql = "Insert into Registration() values ();";
-            stmt.executeUpdate(sql);
+            /*
+                Update rows with indexes
+             */
+            System.out.println("============================================= Start Update Row ===================================================");
+            System.out.println("============================================= End Update Row ===================================================");
 
-            sql = "Insert into Registration(age) values (31);";
-            stmt.executeUpdate(sql);
+            /*
+                Delete rows with indexes
+             */
+            System.out.println("============================================= Start Delete Row ===================================================");
+            System.out.println("============================================= End Delete Row ===================================================");
 
-            sql = "Insert into Registration(first) values ('first13');";
-            stmt.executeUpdate(sql);
 
-//            null => 10, 11, 12
 
-            System.out.println("-----------------------------------------------------UPDATE---------------------------------------------------------------------");
-
+//            System.out.println("-----------------------------------------------------UPDATE---------------------------------------------------------------------");
+//
 //            sql = "UPDATE Registration SET  first = 'update6', last = 'update6' WHERE ID = 6;";
 //            stmt.executeUpdate(sql);
 //
-//            sql = "UPDATE Registration SET  first = 'update8', last = 'update8' WHERE ID = 8;";
-//            stmt.executeUpdate(sql);
-//
-//            sql = "UPDATE Registration SET  first = 'update1', last = 'update1' WHERE ID = 1;";
-//            stmt.executeUpdate(sql);
-//
-//            sql = "UPDATE Registration SET  first = 'update3', last = 'update3' WHERE ID = 3;";
-//            stmt.executeUpdate(sql);
-//
-//            sql = "UPDATE Registration SET  first = 'first13', last = 'last13' WHERE ID = 10;";
-//            stmt.executeUpdate(sql);
-//
-//            sql = "UPDATE Registration SET  first = NULL, last = NULL WHERE ID = 11;";
-//            stmt.executeUpdate(sql);
-
-            System.out.println("----------------------------------------------------DELETE----------------------------------------------------------------------");
-//
-//
+//            System.out.println("----------------------------------------------------DELETE----------------------------------------------------------------------");
+////
 //            sql = "DELETE FROM Registration WHERE id = 3;";
 //            stmt.executeUpdate(sql);
 //
-//            sql = "DELETE FROM Registration WHERE id = 10;";
-//            stmt.executeUpdate(sql);
-//
-//            sql = "DELETE FROM Registration WHERE id = 1;";
-//            stmt.executeUpdate(sql);
-//
-            System.out.println("-----------------------------------------------------------SELECT-------------------------------------------------------");
-
-            sql = "Select first,last from Registration where first = 'first159'";
-            resultSet = stmt.executeQuery(sql);
-
-            System.out.println("1.===========================================================================================================");
-
-//            sql = "Select 1";
+//            sql = "Select distinct age from Registration where first = 'first159' and first = 'first159' and last = 'last159'";
 //            resultSet = stmt.executeQuery(sql);
-//
-//            System.out.println("2.===========================================================================================================");
-//
-//            sql = "Select Count(first) from Registration";
-//            resultSet = stmt.executeQuery(sql);
-//
-//            System.out.println("3.===========================================================================================================");
-//
-//            sql = "Select Sum(age) from Registration";
-//            resultSet = stmt.executeQuery(sql);
-
-            System.out.println("4.===========================================================================================================");
-
-            sql = "Select Distinct age from Registration where first = 'first159'";
-            resultSet = stmt.executeQuery(sql);
-
-            System.out.println("5.===========================================================================================================");
-
-//            sql = "Select Distinct SUM(age) from Registration";
-//            resultSet = stmt.executeQuery(sql);
-
-            System.out.println("6.===========================================================================================================");
-
-            sql = "Select Distinct SUM(age) from Registration where last = 'last159'";
-            resultSet = stmt.executeQuery(sql);
-
-            System.out.println("7.===========================================================================================================");
-
-//            sql = "Select first, avg(age) from Registration group by(first)";
-//            resultSet = stmt.executeQuery(sql);
-//            while (resultSet.next()) {
-//                System.out.println("==============Result Row============================");
-//                System.out.println(resultSet.getString(1));
-//                System.out.println(resultSet.getInt(2));
-//                System.out.println("==============Result Row============================");
+//            if (!resultSet.next()) {
+//                System.out.println("NATURAL JOIN IS EMPTY");
 //            }
-//
-            System.out.println("8.===========================================================================================================");
-
-            sql = "Select distinct age from Registration where first = 'first159'";
-            resultSet = stmt.executeQuery(sql);
-
-            System.out.println("9.=================================================Natural Join==========================================================");
-
-            sql = "Select distinct age from Registration where first = 'first159' or last = 'last159'";
-            resultSet = stmt.executeQuery(sql);
-            if (!resultSet.next()) {
-                System.out.println("NATURAL JOIN IS EMPTY");
-            }
-            while (resultSet.next()) {
-                System.out.println(resultSet.getInt((0)));
-            }
-
-//            System.out.println("10.================================================= Order By ==========================================================");
-//
-////            sql = "Select age from Registration where first = 'first' order by age";
-////            resultSet = stmt.executeQuery(sql);
-////
-////            System.out.println("11.================================================= Order By ==========================================================");
-////
-////            sql = "Select first, avg(age) from Registration where first = 'first2' group by(first) having avg(age) > 0";
-////            resultSet = stmt.executeQuery(sql);
-////
-////            while (resultSet.next()) {
-////                System.out.println("==============Result Row============================");
-////                System.out.println(resultSet.getString(1));
-////                System.out.println(resultSet.getInt(2));
-////                System.out.println("==============Result Row============================");
-////            }
-//
-//            System.out.println("12.===========================================================================================================");
-//
-////            sql = "DELETE FROM Registration WHERE id = 1;";
-////            stmt.executeUpdate(sql);
-////
-////
-////            sql = "DELETE FROM Registration WHERE id = 3;";
-////            stmt.executeUpdate(sql);
-////
-////            sql = "DELETE FROM Registration WHERE id = 2;";
-////            stmt.executeUpdate(sql);
-//
-////            while (resultSet.next()) {
-////                System.out.println("==============Result Row============================");
-////                System.out.println(resultSet.getString(1));
-////                System.out.println(resultSet.getString(2));
-////                System.out.println("==============Result Row============================");
-////            }
-//
-            System.out.println("=====================================13=======================================================");
-
-            sql = "Select distinct age from Registration where first = 'first159' and first = 'first159' and last = 'last159'";
-            resultSet = stmt.executeQuery(sql);
-            if (!resultSet.next()) {
-                System.out.println("NATURAL JOIN IS EMPTY");
-            }
-            while (resultSet.next()) {
-                System.out.println(resultSet.getInt((0)));
-            }
+//            while (resultSet.next()) {
+//                System.out.println(resultSet.getInt((0)));
+//            }
 
             // STEP 4: Clean-up environment
             stmt.close();
@@ -261,5 +285,46 @@ public class Main {
                 se.printStackTrace();
             } //end finally try
         } //end try
+    }
+
+    public static void check(ResultSet resultSet, int[] expected, int index) throws SQLException {
+        check(resultSet, expected, index, 5);
+    }
+
+    public static void check(ResultSet resultSet, int[] expected, int index, int checkIndex) throws SQLException {
+        check(resultSet, expected, index, checkIndex, false);
+    }
+
+    public static void check(ResultSet resultSet, int[] expected, int index, Boolean isEmpty) throws SQLException {
+        check(resultSet, expected, index, 5, isEmpty);
+    }
+
+    public static void check(ResultSet resultSet, int[] expected, int index, int checkIndex, Boolean isEmpty) throws SQLException {
+        System.out.println("================================================================" + index + "===================================================================");
+        if (expected == null) {
+            return;
+        }
+        if (isEmpty) {
+            expected = new int[]{0, 0, 0 , 0 , 0 , 0};
+        }
+        int i = 0;
+        while (resultSet.next()) {
+            try {
+                if (!(((int) (resultSet.getObject(checkIndex))) == expected[i])) {
+                    System.out.println("\n\n\n Matched in " + index + ", Expected:- " + expected[i] + ", Found:- " + resultSet.getObject(checkIndex).toString() + " !!!\n\n\n");
+                }
+            } catch (ClassCastException ex) {
+                if (!(((long) (resultSet.getObject(checkIndex))) == expected[i])) {
+                    System.out.println("\n\n\n Matched in " + index + ", Expected:- " + expected[i] + ", Found:- " + resultSet.getObject(checkIndex).toString() + " !!!\n\n\n");
+                }
+            }
+            i++;
+        }
+        if (i ==0 && isEmpty) {
+            return;
+        }
+        if (i ==0 && !isEmpty) {
+            System.out.println("\n\n\nERROR in " + index + "!!!\n\n\n");
+        }
     }
 }
