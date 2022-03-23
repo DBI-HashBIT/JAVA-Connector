@@ -172,6 +172,7 @@ public class Main {
             check(resultSet, new int[]{1, 3}, 12);
 
             System.out.println("============================================= End Search Index ===================================================");
+            System.out.println("============================================= Start Aggregate Function Search Index ===================================================");
 
             sql = "Select SUM(checkcolumn) from Registration where first = 'first13'";
             resultSet = stmt.executeQuery(sql);
@@ -224,10 +225,6 @@ public class Main {
             sql = "Select Count(*) from Registration where first = 'first24' or last = 'last141' or middle = 'middle1'";
             resultSet = stmt.executeQuery(sql);
             check(resultSet, new int[]{3}, 24,1);
-
-            System.out.println("============================================= Start Aggregate Function Search Index ===================================================");
-
-
 
             System.out.println("============================================= End Aggregate Function Search Index ===================================================");
 
