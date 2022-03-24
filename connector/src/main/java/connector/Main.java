@@ -13,7 +13,7 @@ public class Main {
     static final String USER = "sa";
     static final String PASS = "";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         Connection conn = null;
         Statement stmt = null;
         try {
@@ -99,6 +99,9 @@ public class Main {
 //            }
 
             sql = "Insert into Registration(first, middle, last, age, checkcolumn) values ('first6', 'middle6', 'last36', 6, 6);";
+            stmt.executeUpdate(sql);
+
+            sql = "Insert into Registration() values ();";
             stmt.executeUpdate(sql);
 
 
@@ -264,12 +267,12 @@ public class Main {
             // STEP 4: Clean-up environment
             stmt.close();
             conn.close();
-        } catch(SQLException se) {
+        } catch(SQLException | ClassNotFoundException se) {
             //Handle errors for JDBC
             se.printStackTrace();
-        } catch(Exception e) {
-            //Handle errors for Class.forName
-            e.printStackTrace();
+//        } catch(Exception e) {
+//            //Handle errors for Class.forName
+//            e.printStackTrace();
         } finally {
             //finally block used to close resources
             try{
@@ -284,19 +287,19 @@ public class Main {
         } //end try
     }
 
-    public static void check(ResultSet resultSet, int[] expected, int index) throws SQLException {
+    public static void check(ResultSet resultSet, int[] expected, int index) throws Exception {
         check(resultSet, expected, index, 5);
     }
 
-    public static void check(ResultSet resultSet, int[] expected, int index, int checkIndex) throws SQLException {
+    public static void check(ResultSet resultSet, int[] expected, int index, int checkIndex) throws Exception {
         check(resultSet, expected, index, checkIndex, false);
     }
 
-    public static void check(ResultSet resultSet, int[] expected, int index, Boolean isEmpty) throws SQLException {
+    public static void check(ResultSet resultSet, int[] expected, int index, Boolean isEmpty) throws Exception {
         check(resultSet, expected, index, 5, isEmpty);
     }
 
-    public static void check(ResultSet resultSet, int[] expected, int index, int checkIndex, Boolean isEmpty) throws SQLException {
+    public static void check(ResultSet resultSet, int[] expected, int index, int checkIndex, Boolean isEmpty) throws Exception {
         System.out.println("================================================================" + index + "===================================================================");
         if (expected == null) {
             return;
@@ -309,10 +312,14 @@ public class Main {
             try {
                 if (!(((int) (resultSet.getObject(checkIndex))) == expected[i])) {
                     System.out.println("\n\n\n Matched in " + index + ", Expected:- " + expected[i] + ", Found:- " + resultSet.getObject(checkIndex).toString() + " !!!\n\n\n");
+
+                throw new Exception("Errror in "+ index + "testcase");
                 }
             } catch (ClassCastException ex) {
                 if (!(((long) (resultSet.getObject(checkIndex))) == expected[i])) {
                     System.out.println("\n\n\n Matched in " + index + ", Expected:- " + expected[i] + ", Found:- " + resultSet.getObject(checkIndex).toString() + " !!!\n\n\n");
+
+                throw new Exception("Errror in "+ index + "testcase");
                 }
             }
             i++;
@@ -321,7 +328,9 @@ public class Main {
             return;
         }
         if (i ==0 && !isEmpty) {
-            System.out.println("\n\n\nERROR in " + index + "!!!\n\n\n");
+            throw new Exception("Errror in "+ index + "testcase");
+
+//            System.out.println("\n\n\nERROR in " + index + "!!!\n\n\n");
         }
     }
 }
