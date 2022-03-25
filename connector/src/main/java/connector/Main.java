@@ -300,6 +300,11 @@ public class Main {
     }
 
     public static void check(ResultSet resultSet, int[] expected, int index, int checkIndex, Boolean isEmpty) throws Exception {
+        System.out.print("Expected Sequence :- ");
+        for (int a: expected) {
+            System.out.print(a + ", ");
+        }
+        System.out.println();
         System.out.println("================================================================" + index + "===================================================================");
         if (expected == null) {
             return;
