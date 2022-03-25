@@ -1,5 +1,7 @@
 package connector;
 
+import org.h2.command.dml.Delete;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,7 +47,16 @@ public class Main {
             sql = "Insert into Registration(first, last, age) values ('first26', 'last26', 23);";
             stmt.executeUpdate(sql);
 
+            sql = "Insert into Registration(first, last, age) values ('first26', 'last26', 23);";
+            stmt.executeUpdate(sql);
+
+            sql = "Insert into Registration(first, last, age) values ('brr26', 'brrlast26', 23);";
+            stmt.executeUpdate(sql);
+
             sql = "UPDATE Registration SET  first = 'update6', last = 'update6' WHERE ID = 1;";
+            stmt.executeUpdate(sql);
+
+            sql = "Delete from Registration where id = '3'";
             stmt.executeUpdate(sql);
 
 //
