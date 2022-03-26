@@ -1,5 +1,3 @@
-package connector;
-
 import org.h2.command.dml.Delete;
 
 import java.sql.*;
@@ -41,7 +39,7 @@ public class Main {
             stmt.executeUpdate(sql);
             System.out.println("Created index in given database...");
 
-            sql = "Insert into Registration(first, last, age) values ('first159', 'last159', 23);";
+            sql = "Insert into Registration(first, last, age) values ('first15', 'last15', 23);";
             stmt.executeUpdate(sql);
 
             sql = "Insert into Registration(first, last, age) values ('first26', 'last26', 23);";
