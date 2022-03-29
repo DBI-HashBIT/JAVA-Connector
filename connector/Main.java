@@ -59,6 +59,10 @@ public class Main {
             stmt.executeUpdate(sql);
             System.out.println("Created index in given database...");
 
+            sql = "CREATE Index age_index on REGISTRATION(age);";
+            stmt.executeUpdate(sql);
+            System.out.println("Created index in given database...");
+
             sql = "Insert into Registration(first, middle, last, age, checkcolumn) values ('first13', 'middle3', 'last36', 3, 3);";
             stmt.executeUpdate(sql);
 
@@ -230,6 +234,18 @@ public class Main {
             check(resultSet, new int[]{3}, 24,1);
 
             System.out.println("============================================= End Aggregate Function Search Index ===================================================");
+
+            System.out.println("============================================= Other type index ======================================================================");
+
+            sql = "Select Count(*) from Registration where age = 1 and checkcolumn =  2";
+            resultSet = stmt.executeQuery(sql);
+            check(resultSet, new int[]{3}, 24,1, true);
+
+            sql = "Select * from Registration where age = 1 and checkcolumn =  2";
+            resultSet = stmt.executeQuery(sql);
+            check(resultSet, new int[]{3}, 24,1, true);
+
+            System.out.println("============================================= Other type index ======================================================================");
 
             /*
                 Update rows with indexes
