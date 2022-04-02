@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.h2.table.Column;
 import org.h2.value.TypeInfo;
 import org.locationtech.jts.util.Assert;
+import org.locationtech.jts.util.Stopwatch;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,8 +23,7 @@ public class Main {
     static final String PASS = "";
 
     // faker for mock data insertion
-    private static final Faker faker = new Faker(new Random(0));
-    private static final Faker faker2 = new Faker(new Random(0));
+    private static final Faker faker = TestHelper.getSeededFaker();
 
     private static final String TABLE_NAME = "demo";
     private static final Column PRIMARY_KEY = new Column("id", TypeInfo.TYPE_BIGINT);
@@ -37,7 +37,7 @@ public class Main {
 
     private static final int FNAME_HASHBIT_INDEX_BUCKETS = 16;
 
-    private static final int DATA_ROWS = 30;
+    private static final int DATA_ROWS = 1000;
 
     private static Connection conn = null;
     private static Statement stmt = null;
@@ -46,6 +46,8 @@ public class Main {
 
     public static void main(String[] args) {
         try {
+            log.error("Starting demo");
+
             setUpDbConnection();
             initStmt();
 
@@ -81,36 +83,7 @@ public class Main {
             }
 
             // query data
-            int j;
-            for (j = 0; j < DATA_ROWS; j++) {
-                String fname = faker2.name().firstName();
-                if (!(j % 4 == 0)) {
-                    continue;
-                }
-                ResultSet indexedRs = executeQuerySQL(SqlHelper.getSelectSql(
-                        TABLE_NAME,
-                        Collections.singletonList(PRIMARY_KEY),
-                        Collections.singletonList(
-                                OTHER_COLUMNS.get(0).getName() + " = '" + fname + "'"
-                        )), searchStmt1);
-
-                ResultSet nonIndexedRs = executeQuerySQL(SqlHelper.getSelectSql(
-                        TABLE_NAME,
-                        Collections.singletonList(PRIMARY_KEY),
-                        Collections.singletonList(
-                                OTHER_COLUMNS.get(1).getName() + " = '" + fname + "'"
-                        )), searchStmt2);
-
-                checkEquality(indexedRs, nonIndexedRs);
-            }
-
-
-
-
-
-
-
-
+            timeSelect();
 
 
 //
@@ -162,6 +135,52 @@ public class Main {
             } //end finally try
         } //end try
     }
+
+    private static void testSelect() throws SQLException {
+        Faker localFaker = TestHelper.getSeededFaker();
+        for (int j = 0; j < DATA_ROWS; j++) {
+            String fname = localFaker.name().firstName();
+            if (!(j % 4 == 0)) {
+                continue;
+            }
+            ResultSet indexedRs = executeSelectUsingColumn(0, fname, searchStmt1);
+            ResultSet nonIndexedRs = executeSelectUsingColumn(1, fname, searchStmt2);
+
+            checkEquality(indexedRs, nonIndexedRs);
+        }
+    }
+
+    private static void timeSelect() throws SQLException {
+        Stopwatch stopwatch = new Stopwatch();
+        Faker localFaker = TestHelper.getSeededFaker();
+        stopwatch.start();
+        for (int j = 0; j < DATA_ROWS; j++) {
+            String fname = localFaker.name().firstName();
+            ResultSet indexedRs = executeSelectUsingColumn(0, fname, searchStmt1);
+        }
+        stopwatch.stop();
+        log.info("Indexed select took {}", stopwatch.getTime());
+
+        Stopwatch stopwatch2 = new Stopwatch();
+        localFaker = TestHelper.getSeededFaker();
+        stopwatch2.start();
+        for (int j = 0; j < DATA_ROWS; j++) {
+            String fname = localFaker.name().firstName();
+            ResultSet nonIndexedRs = executeSelectUsingColumn(1, fname, searchStmt2);
+        }
+        stopwatch2.stop();
+        log.info("Non-indexed select took {}", stopwatch2.getTime());
+    }
+
+    private static ResultSet executeSelectUsingColumn(int column, String fname, Statement searchStmt) throws SQLException {
+        return executeQuerySQL(SqlHelper.getSelectSql(
+                TABLE_NAME,
+                Collections.singletonList(PRIMARY_KEY),
+                Collections.singletonList(
+                        OTHER_COLUMNS.get(column).getName() + " = '" + fname + "'"
+                )), searchStmt);
+    }
+
 
     private static void executeUpdateSQL(String sql) throws SQLException {
         log.debug("Executing SQL: {}", sql);

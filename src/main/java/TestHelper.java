@@ -2,6 +2,7 @@ import com.github.javafaker.Faker;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class TestHelper {
     private static final Faker faker = new Faker();
@@ -12,6 +13,10 @@ public class TestHelper {
             names.add(faker.name().firstName());
         }
         return names;
+    }
+
+    public static Faker getSeededFaker() {
+        return new Faker(new Random(0));
     }
 
 
