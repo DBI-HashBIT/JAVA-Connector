@@ -43,6 +43,24 @@ public class SqlHelper {
         return sb.toString();
     }
 
+    public static String getSelectSql(String tableName, List<Column> columns, List<String> conditions) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT ");
+        for (Column column : columns) {
+            sb.append(column.getName()).append(",");
+        }
+        sb.deleteCharAt(sb.length() - 1);
+        sb.append(" FROM ").append(tableName);
+        if (conditions != null && conditions.size() > 0) {
+            sb.append(" WHERE ");
+            for (String condition : conditions) {
+                sb.append(condition).append(" AND ");
+            }
+            sb.delete(sb.length() - 5, sb.length());
+        }
+        return sb.toString();
+    }
+
     private static String escape(String str) {
         return str.replace("'", "''");
     }
