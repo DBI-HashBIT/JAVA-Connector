@@ -1,14 +1,15 @@
 import com.github.javafaker.Faker;
-import org.h2.command.dml.Delete;
 
 import java.sql.*;
 import lombok.extern.slf4j.Slf4j;
 import org.h2.table.Column;
 import org.h2.value.TypeInfo;
+import org.locationtech.jts.util.Assert;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 @Slf4j
 public class Main {
@@ -20,8 +21,9 @@ public class Main {
     static final String USER = "sa";
     static final String PASS = "";
 
-    // faker for mock data
-    private static final Faker faker = new Faker();
+    // faker for mock data insertion
+    private static final Faker faker = new Faker(new Random(0));
+    private static final Faker faker2 = new Faker(new Random(0));
 
     private static final String TABLE_NAME = "demo";
     private static final Column PRIMARY_KEY = new Column("id", TypeInfo.TYPE_BIGINT);
@@ -35,8 +37,12 @@ public class Main {
 
     private static final int FNAME_HASHBIT_INDEX_BUCKETS = 16;
 
+    private static final int DATA_ROWS = 30;
+
     private static Connection conn = null;
     private static Statement stmt = null;
+    private static Statement searchStmt1 = null;
+    private static Statement searchStmt2 = null;
 
     public static void main(String[] args) {
         try {
@@ -44,34 +50,65 @@ public class Main {
             initStmt();
 
             // drop able if exists
-            executeSQL(SqlHelper.getDropTableSql(TABLE_NAME));
+            executeUpdateSQL(SqlHelper.getDropTableSql(TABLE_NAME));
 
             // create table
-            executeSQL(SqlHelper.getCreateTableSql(
+            executeUpdateSQL(SqlHelper.getCreateTableSql(
                     TABLE_NAME,
                     PRIMARY_KEY,
                     OTHER_COLUMNS
             ));
 
             // create hashbit index
-            executeSQL(SqlHelper.getCreateHashIndexSql(
+            executeUpdateSQL(SqlHelper.getCreateHashIndexSql(
                     FNAME_HASHBIT_INDEX_NAME,
                     TABLE_NAME,
                     OTHER_COLUMNS.get(0).getName(),
                     FNAME_HASHBIT_INDEX_BUCKETS
             ));
 
-            // insert 1000 rows
-            for (int i = 0; i < 1000; i++) {
-                executeSQL(SqlHelper.getInsertSql(
+            // insert mock data
+            for (int i = 0; i < DATA_ROWS; i++) {
+                String fname = faker.name().firstName();
+                executeUpdateSQL(SqlHelper.getInsertSql(
                         TABLE_NAME,
                         OTHER_COLUMNS,
                         Arrays.asList(
-                            faker.name().firstName(),
-                            faker.name().lastName()
+                            fname,
+                            fname
                         )
                 ));
             }
+
+            // query data
+            int j;
+            for (j = 0; j < DATA_ROWS; j++) {
+                String fname = faker2.name().firstName();
+                if (!(j % 4 == 0)) {
+                    continue;
+                }
+                ResultSet indexedRs = executeQuerySQL(SqlHelper.getSelectSql(
+                        TABLE_NAME,
+                        Collections.singletonList(PRIMARY_KEY),
+                        Collections.singletonList(
+                                OTHER_COLUMNS.get(0).getName() + " = '" + fname + "'"
+                        )), searchStmt1);
+
+                ResultSet nonIndexedRs = executeQuerySQL(SqlHelper.getSelectSql(
+                        TABLE_NAME,
+                        Collections.singletonList(PRIMARY_KEY),
+                        Collections.singletonList(
+                                OTHER_COLUMNS.get(1).getName() + " = '" + fname + "'"
+                        )), searchStmt2);
+
+                checkEquality(indexedRs, nonIndexedRs);
+            }
+
+
+
+
+
+
 
 
 
@@ -126,18 +163,46 @@ public class Main {
         } //end try
     }
 
-    private static void executeSQL(String sql) throws SQLException {
+    private static void executeUpdateSQL(String sql) throws SQLException {
         log.debug("Executing SQL: {}", sql);
         stmt.executeUpdate(sql);
     }
 
+    private static ResultSet executeQuerySQL(String sql, Statement stmt) throws SQLException {
+        log.debug("Executing SQL: {}", sql);
+        return stmt.executeQuery(sql);
+    }
+
+    private static void checkEquality(ResultSet rs1, ResultSet rs2){
+        try {
+            while (rs1.next() && rs2.next()) {
+                for (int i = 0; i < rs1.getMetaData().getColumnCount(); i++) {
+                    String colName = rs1.getMetaData().getColumnName(i + 1);
+                    String colValue1 = rs1.getString(colName);
+                    String colValue2 = rs2.getString(colName);
+                    log.debug("{} = {}", colName, colValue1);
+                    log.debug("{} = {}", colName, colValue2);
+                    if (!colValue1.equals(colValue2)) {
+                        log.error("Column {} has different values: {} vs {}", colName, colValue1, colValue2);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            log.error("Error while checking equality", e);
+        }
+    }
+
     private static void initStmt() throws SQLException {
         stmt = conn.createStatement();
+        searchStmt1 = conn.createStatement();
+        searchStmt2 = conn.createStatement();
     }
 
     private static void closeConnections() throws SQLException {
         // STEP 4: Clean-up environment
         stmt.close();
+        searchStmt1.close();
+        searchStmt2.close();
         conn.close();
     }
 
@@ -145,7 +210,7 @@ public class Main {
         // STEP 1: Register JDBC driver
         Class.forName(JDBC_DRIVER);
 
-        //STEP 2: Open a connection
+        // STEP 2: Open a connection
         System.out.println("Connecting to database...");
         conn = DriverManager.getConnection(DB_URL,USER,PASS);
     }
