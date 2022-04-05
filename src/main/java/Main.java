@@ -33,7 +33,7 @@ public class Main {
 
     private static final int FNAME_HASHBIT_INDEX_BUCKETS = 1024;
 
-    private static final int DATA_ROWS = 60000;
+    private static final int DATA_ROWS = 200000;
 
     private static Connection conn = null;
     private static Statement stmt = null;
@@ -71,20 +71,24 @@ public class Main {
 
 
             // insert mock data
+            StopWatch stopwatch = new StopWatch();
+            stopwatch.start();
             for (int i = 0; i < DATA_ROWS; i++) {
-                if (i % 1000 == 0) {
+                /*if (i % 1000 == 0) {
                     log.info("Inserting row {}", i);
-                }
+                }*/
                 String fname = fNames.get(i);
                 executeUpdateSQL(SqlHelper.getInsertSql(
                         TABLE_NAME,
                         OTHER_COLUMNS,
                         Arrays.asList(
-                            fname,
-                            fname
+                                fname,
+                                fname
                         )
                 ));
             }
+            stopwatch.stop();
+            log.info("insert took {}", stopwatch.formatTime());
 
             // query data
             timeSelect();
@@ -171,28 +175,28 @@ public class Main {
         for (int i = 0; i < testFraction; i++) {
             randInts.add(ThreadLocalRandom.current().nextInt(0, fNames.size()));
         }
-
         TimeUnit.SECONDS.sleep(10);
 
-        StopWatch stopwatch = new StopWatch();
+ /*       StopWatch stopwatch = new StopWatch();
         stopwatch.start();
         for (int j = 0; j < testFraction; j++) {
             String fname = fNames.get(randInts.get(j));
             ResultSet indexedRs = executeSelectUsingColumn(0, fname, searchStmt1);
-        }
+       }
         stopwatch.stop();
         log.info("Indexed select took {}", stopwatch.formatTime());
 
-//        TimeUnit.SECONDS.sleep(10);
-//
-//        StopWatch stopwatch2 = new StopWatch();
-//        stopwatch2.start();
-//        for (int j = 0; j < testFraction; j++) {
-//            String fname = fNames.get(randInts.get(j));
-//            ResultSet nonIndexedRs = executeSelectUsingColumn(1, fname, searchStmt2);
-//        }
-//        stopwatch2.stop();
-//        log.info("Non-indexed select took {}", stopwatch2.formatTime());
+
+        TimeUnit.SECONDS.sleep(10);
+
+        StopWatch stopwatch2 = new StopWatch();
+        stopwatch2.start();
+        for (int j = 0; j < testFraction; j++) {
+            String fname = fNames.get(randInts.get(j));
+            ResultSet nonIndexedRs = executeSelectUsingColumn(1, fname, searchStmt2);
+        }
+        stopwatch2.stop();
+        log.info("Non-indexed select took {}", stopwatch2.formatTime());*/
 
 
     }
