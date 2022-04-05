@@ -3,14 +3,13 @@ import com.github.javafaker.Faker;
 import java.sql.*;
 import lombok.extern.slf4j.Slf4j;
 import org.h2.table.Column;
+import org.h2.util.Profiler;
 import org.h2.value.TypeInfo;
-import org.locationtech.jts.util.Assert;
-import org.locationtech.jts.util.Stopwatch;
+import org.apache.commons.lang3.time.StopWatch;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class Main {
@@ -22,9 +21,6 @@ public class Main {
     static final String USER = "sa";
     static final String PASS = "";
 
-    // faker for mock data insertion
-    private static final Faker faker = TestHelper.getSeededFaker();
-
     private static final String TABLE_NAME = "demo";
     private static final Column PRIMARY_KEY = new Column("id", TypeInfo.TYPE_BIGINT);
     private static final List<Column> OTHER_COLUMNS = Arrays.asList(
@@ -35,19 +31,21 @@ public class Main {
     private static final String FNAME_HASHBIT_INDEX_NAME = "FNAME_HASHBIT_INDEX";
     private static final String LNAME_HASHBIT_INDEX_NAME = "LNAME_HASHBIT_INDEX";
 
-    private static final int FNAME_HASHBIT_INDEX_BUCKETS = 16;
+    private static final int FNAME_HASHBIT_INDEX_BUCKETS = 1024;
 
-    private static final int DATA_ROWS = 1000;
+    private static final int DATA_ROWS = 60000;
 
     private static Connection conn = null;
     private static Statement stmt = null;
     private static Statement searchStmt1 = null;
     private static Statement searchStmt2 = null;
 
+    // mock data
+    private static final List<String> fNames = TestHelper.getNMockFirstNames(DATA_ROWS);
+    private static final List<String> lNames = TestHelper.getNMockLastNames(DATA_ROWS);
+
     public static void main(String[] args) {
         try {
-            log.error("Starting demo");
-
             setUpDbConnection();
             initStmt();
 
@@ -69,9 +67,15 @@ public class Main {
                     FNAME_HASHBIT_INDEX_BUCKETS
             ));
 
+            // generate mock data
+
+
             // insert mock data
             for (int i = 0; i < DATA_ROWS; i++) {
-                String fname = faker.name().firstName();
+                if (i % 1000 == 0) {
+                    log.info("Inserting row {}", i);
+                }
+                String fname = fNames.get(i);
                 executeUpdateSQL(SqlHelper.getInsertSql(
                         TABLE_NAME,
                         OTHER_COLUMNS,
@@ -84,7 +88,7 @@ public class Main {
 
             // query data
             timeSelect();
-
+//            testSelect();
 
 //
 //
@@ -137,9 +141,19 @@ public class Main {
     }
 
     private static void testSelect() throws SQLException {
-        Faker localFaker = TestHelper.getSeededFaker();
+        for (int j = 0; j < DATA_ROWS / 4; j++) {
+            int rand = ThreadLocalRandom.current().nextInt(0, fNames.size());
+            String fname = fNames.get(rand);
+            ResultSet indexedRs = executeSelectUsingColumn(0, fname, searchStmt1);
+            ResultSet nonIndexedRs = executeSelectUsingColumn(1, fname, searchStmt2);
+
+            checkEquality(indexedRs, nonIndexedRs);
+        }
+    }
+
+    private static void testOrSelect() throws SQLException {
         for (int j = 0; j < DATA_ROWS; j++) {
-            String fname = localFaker.name().firstName();
+            String fname = fNames.get(j);
             if (!(j % 4 == 0)) {
                 continue;
             }
@@ -150,26 +164,37 @@ public class Main {
         }
     }
 
-    private static void timeSelect() throws SQLException {
-        Stopwatch stopwatch = new Stopwatch();
-        Faker localFaker = TestHelper.getSeededFaker();
+    private static void timeSelect() throws SQLException, InterruptedException {
+        int testFraction = DATA_ROWS / 4;
+
+        List<Integer> randInts = new ArrayList<>();
+        for (int i = 0; i < testFraction; i++) {
+            randInts.add(ThreadLocalRandom.current().nextInt(0, fNames.size()));
+        }
+
+        TimeUnit.SECONDS.sleep(10);
+
+        StopWatch stopwatch = new StopWatch();
         stopwatch.start();
-        for (int j = 0; j < DATA_ROWS; j++) {
-            String fname = localFaker.name().firstName();
+        for (int j = 0; j < testFraction; j++) {
+            String fname = fNames.get(randInts.get(j));
             ResultSet indexedRs = executeSelectUsingColumn(0, fname, searchStmt1);
         }
         stopwatch.stop();
-        log.info("Indexed select took {}", stopwatch.getTime());
+        log.info("Indexed select took {}", stopwatch.formatTime());
 
-        Stopwatch stopwatch2 = new Stopwatch();
-        localFaker = TestHelper.getSeededFaker();
-        stopwatch2.start();
-        for (int j = 0; j < DATA_ROWS; j++) {
-            String fname = localFaker.name().firstName();
-            ResultSet nonIndexedRs = executeSelectUsingColumn(1, fname, searchStmt2);
-        }
-        stopwatch2.stop();
-        log.info("Non-indexed select took {}", stopwatch2.getTime());
+//        TimeUnit.SECONDS.sleep(10);
+//
+//        StopWatch stopwatch2 = new StopWatch();
+//        stopwatch2.start();
+//        for (int j = 0; j < testFraction; j++) {
+//            String fname = fNames.get(randInts.get(j));
+//            ResultSet nonIndexedRs = executeSelectUsingColumn(1, fname, searchStmt2);
+//        }
+//        stopwatch2.stop();
+//        log.info("Non-indexed select took {}", stopwatch2.formatTime());
+
+
     }
 
     private static ResultSet executeSelectUsingColumn(int column, String fname, Statement searchStmt) throws SQLException {
