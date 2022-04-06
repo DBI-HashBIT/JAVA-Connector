@@ -34,10 +34,10 @@ public class Main {
     private static final String FNAME_HASHBIT_INDEX_NAME = "FNAME_HASHBIT_INDEX";
     private static final String LNAME_HASHBIT_INDEX_NAME = "LNAME_HASHBIT_INDEX";
 
-    private static final int FNAME_HASHBIT_INDEX_BUCKETS = 9192;
+    private static final int FNAME_HASHBIT_INDEX_BUCKETS = 1024;
 
-    private static final int DATA_ROWS = 40000;
-    private static final int DUPLICATION_RATE = 40;
+    private static final int DATA_ROWS = 60000;
+    private static final int DUPLICATION_RATE = 1;
 
     private static Connection conn = null;
     private static Statement stmt = null;
@@ -88,7 +88,7 @@ public class Main {
 
             for (int i = 0; i < DATA_ROWS; i++) {
                 if (i % 1000 == 0) {
-                    log.info("Inserting row {}", i);
+                    //log.info("Inserting row {}", i);
                 }
                 String fname = fNames.get(fnameRand.nextInt(fNames.size()));
                 String lname = lNames.get(lnameRand.nextInt(lNames.size()));
@@ -107,7 +107,7 @@ public class Main {
             // query data
 //            timeSelect();
 //            testAndSelect();
-            timeAndSelect();
+            timeOrSelect();
 
 //
 //
@@ -170,40 +170,47 @@ public class Main {
         }
     }
 
-    private static void testAndSelect() throws SQLException {
+
+    private static void timeOrSelect() throws SQLException, InterruptedException {
+
         int testFraction = DATA_ROWS / 4;
-//        List<Integer> randInts = new Random(0).ints(0, fNames.size()).distinct().limit(testFraction).boxed().collect(Collectors.toList());
+
         Random fnameRand = new Random(2);
         Random lnameRand = new Random(3);
+
+        /*TimeUnit.SECONDS.sleep(10);
+
+        StopWatch stopwatch = new StopWatch();
+        stopwatch.start();
         for (int j = 0; j < testFraction; j++) {
             String fname = fNames.get(fnameRand.nextInt(fNames.size()));
             String lname = lNames.get(lnameRand.nextInt(lNames.size()));
-            ResultSet indexedRs = executeAndSelectUsingColumns(
+            ResultSet indexedRs = executeOrSelectUsingColumns(
                     Arrays.asList(1,3),
                     Arrays.asList(fname, lname),
                     searchStmt1
             );
-            ResultSet nonIndexedRs = executeAndSelectUsingColumns(
+        }
+        stopwatch.stop();
+        log.info("Indexed OR select took {}", stopwatch.formatTime());*/
+
+        TimeUnit.SECONDS.sleep(10);
+
+        StopWatch stopwatch2 = new StopWatch();
+        stopwatch2.start();
+        for (int j = 0; j < testFraction; j++) {
+            String fname = fNames.get(fnameRand.nextInt(fNames.size()));
+            String lname = lNames.get(lnameRand.nextInt(lNames.size()));
+            ResultSet nonIndexedRs = executeOrSelectUsingColumns(
                     Arrays.asList(0,2),
                     Arrays.asList(fname, lname),
                     searchStmt2
             );
-
-            checkEquality(indexedRs, nonIndexedRs);
         }
-    }
+        stopwatch2.stop();
+        log.info("Non-indexed OR select took {}", stopwatch2.formatTime());
 
-    private static void testOrSelect() throws SQLException {
-        for (int j = 0; j < DATA_ROWS; j++) {
-            String fname = fNames.get(j);
-            if (!(j % 4 == 0)) {
-                continue;
-            }
-            ResultSet indexedRs = executeSelectUsingColumn(0, fname, searchStmt1);
-            ResultSet nonIndexedRs = executeSelectUsingColumn(1, fname, searchStmt2);
 
-            checkEquality(indexedRs, nonIndexedRs);
-        }
     }
 
     private static void timeSelect() throws SQLException, InterruptedException {
@@ -236,46 +243,6 @@ public class Main {
 
     }
 
-    private static void timeAndSelect() throws SQLException, InterruptedException {
-        int testFraction = DATA_ROWS / 4;
-
-        Random fnameRand = new Random(2);
-        Random lnameRand = new Random(3);
-
-        TimeUnit.SECONDS.sleep(10);
-
-        StopWatch stopwatch = new StopWatch();
-        stopwatch.start();
-        for (int j = 0; j < testFraction; j++) {
-            String fname = fNames.get(fnameRand.nextInt(fNames.size()));
-            String lname = lNames.get(lnameRand.nextInt(lNames.size()));
-            ResultSet indexedRs = executeAndSelectUsingColumns(
-                    Arrays.asList(1,3),
-                    Arrays.asList(fname, lname),
-                    searchStmt1
-            );
-        }
-        stopwatch.stop();
-        log.info("Indexed AND select took {}", stopwatch.formatTime());
-
-//        TimeUnit.SECONDS.sleep(10);
-//
-//        StopWatch stopwatch2 = new StopWatch();
-//        stopwatch2.start();
-//        for (int j = 0; j < testFraction; j++) {
-//            String fname = fNames.get(fnameRand.nextInt(fNames.size()));
-//            String lname = lNames.get(lnameRand.nextInt(lNames.size()));
-//            ResultSet nonIndexedRs = executeAndSelectUsingColumns(
-//                    Arrays.asList(0,2),
-//                    Arrays.asList(fname, lname),
-//                    searchStmt2
-//            );
-//        }
-//        stopwatch2.stop();
-//        log.info("Non-indexed AND select took {}", stopwatch2.formatTime());
-
-
-    }
 
     private static ResultSet executeSelectUsingColumn(int column, String fname, Statement searchStmt) throws SQLException {
         return executeQuerySQL(SqlHelper.getSelectSql(
@@ -286,16 +253,17 @@ public class Main {
                 )), searchStmt);
     }
 
-    private static ResultSet executeAndSelectUsingColumns(List<Integer> columns, List<String> values, Statement searchStmt) throws SQLException {
+
+    private static ResultSet executeOrSelectUsingColumns(List<Integer> columns, List<String> values, Statement searchStmt) throws SQLException {
         List<String> conditions = new ArrayList<>();
         for (int i = 0; i < columns.size(); i++) {
             conditions.add(OTHER_COLUMNS.get(columns.get(i)).getName() + " = " + SqlHelper.wrapWithQuote(SqlHelper.escape(values.get(i))));
         }
         return executeQuerySQL(SqlHelper.getSelectSql(
-                TABLE_NAME,
-                Collections.singletonList(PRIMARY_KEY),
-                conditions),
-            searchStmt);
+                        TABLE_NAME,
+                        Collections.singletonList(PRIMARY_KEY),
+                        conditions),
+                searchStmt);
     }
 
 

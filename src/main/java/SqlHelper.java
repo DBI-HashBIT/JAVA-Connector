@@ -54,9 +54,10 @@ public class SqlHelper {
         if (conditions != null && conditions.size() > 0) {
             sb.append(" WHERE ");
             for (String condition : conditions) {
-                sb.append(condition).append(" AND ");
+                sb.append(condition).append(" OR ");
             }
-            sb.delete(sb.length() - 5, sb.length());
+            sb.delete(sb.length() - 4, sb.length());
+            //System.out.println(sb);
         }
         return sb.toString();
     }
