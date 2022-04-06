@@ -10,6 +10,7 @@ import org.apache.commons.lang3.time.StopWatch;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class Main {
@@ -31,9 +32,9 @@ public class Main {
     private static final String FNAME_HASHBIT_INDEX_NAME = "FNAME_HASHBIT_INDEX";
     private static final String LNAME_HASHBIT_INDEX_NAME = "LNAME_HASHBIT_INDEX";
 
-    private static final int FNAME_HASHBIT_INDEX_BUCKETS = 1024;
+    private static final int FNAME_HASHBIT_INDEX_BUCKETS = 512;
 
-    private static final int DATA_ROWS = 60000;
+    private static final int DATA_ROWS = 40000;
 
     private static Connection conn = null;
     private static Statement stmt = null;
@@ -167,10 +168,7 @@ public class Main {
     private static void timeSelect() throws SQLException, InterruptedException {
         int testFraction = DATA_ROWS / 4;
 
-        List<Integer> randInts = new ArrayList<>();
-        for (int i = 0; i < testFraction; i++) {
-            randInts.add(ThreadLocalRandom.current().nextInt(0, fNames.size()));
-        }
+        List<Integer> randInts = new Random(0).ints(0, fNames.size()).distinct().limit(testFraction).boxed().collect(Collectors.toList());
 
         TimeUnit.SECONDS.sleep(10);
 
