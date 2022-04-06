@@ -34,9 +34,9 @@ public class Main {
     private static final String FNAME_HASHBIT_INDEX_NAME = "FNAME_HASHBIT_INDEX";
     private static final String LNAME_HASHBIT_INDEX_NAME = "LNAME_HASHBIT_INDEX";
 
-    private static final int FNAME_HASHBIT_INDEX_BUCKETS = 1024;
+    private static final int FNAME_HASHBIT_INDEX_BUCKETS = 128;
 
-    private static final int DATA_ROWS = 60000;
+    private static final int DATA_ROWS = 40000;
     private static final int DUPLICATION_RATE = 1;
 
     private static Connection conn = null;
@@ -178,7 +178,7 @@ public class Main {
         Random fnameRand = new Random(2);
         Random lnameRand = new Random(3);
 
-        /*TimeUnit.SECONDS.sleep(10);
+        TimeUnit.SECONDS.sleep(10);
 
         StopWatch stopwatch = new StopWatch();
         stopwatch.start();
@@ -192,23 +192,23 @@ public class Main {
             );
         }
         stopwatch.stop();
-        log.info("Indexed OR select took {}", stopwatch.formatTime());*/
+        log.info("Indexed OR select took {}", stopwatch.formatTime());
 
-        TimeUnit.SECONDS.sleep(10);
-
-        StopWatch stopwatch2 = new StopWatch();
-        stopwatch2.start();
-        for (int j = 0; j < testFraction; j++) {
-            String fname = fNames.get(fnameRand.nextInt(fNames.size()));
-            String lname = lNames.get(lnameRand.nextInt(lNames.size()));
-            ResultSet nonIndexedRs = executeOrSelectUsingColumns(
-                    Arrays.asList(0,2),
-                    Arrays.asList(fname, lname),
-                    searchStmt2
-            );
-        }
-        stopwatch2.stop();
-        log.info("Non-indexed OR select took {}", stopwatch2.formatTime());
+//        TimeUnit.SECONDS.sleep(10);
+//
+//        StopWatch stopwatch2 = new StopWatch();
+//        stopwatch2.start();
+//        for (int j = 0; j < testFraction; j++) {
+//            String fname = fNames.get(fnameRand.nextInt(fNames.size()));
+//            String lname = lNames.get(lnameRand.nextInt(lNames.size()));
+//            ResultSet nonIndexedRs = executeOrSelectUsingColumns(
+//                    Arrays.asList(0,2),
+//                    Arrays.asList(fname, lname),
+//                    searchStmt2
+//            );
+//        }
+//        stopwatch2.stop();
+//        log.info("Non-indexed OR select took {}", stopwatch2.formatTime());
 
 
     }
