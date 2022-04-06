@@ -26,15 +26,17 @@ public class Main {
     private static final Column PRIMARY_KEY = new Column("id", TypeInfo.TYPE_BIGINT);
     private static final List<Column> OTHER_COLUMNS = Arrays.asList(
             new Column("fname", TypeInfo.TYPE_VARCHAR),
-            new Column("lname", TypeInfo.TYPE_VARCHAR)
+            new Column("indexedfname", TypeInfo.TYPE_VARCHAR),
+            new Column("lname", TypeInfo.TYPE_VARCHAR),
+            new Column("indexedlname", TypeInfo.TYPE_VARCHAR)
     );
 
     private static final String FNAME_HASHBIT_INDEX_NAME = "FNAME_HASHBIT_INDEX";
     private static final String LNAME_HASHBIT_INDEX_NAME = "LNAME_HASHBIT_INDEX";
 
-    private static final int FNAME_HASHBIT_INDEX_BUCKETS = 512;
+    private static final int FNAME_HASHBIT_INDEX_BUCKETS = 128;
 
-    private static final int DATA_ROWS = 40000;
+    private static final int DATA_ROWS = 10000;
 
     private static Connection conn = null;
     private static Statement stmt = null;
@@ -60,15 +62,21 @@ public class Main {
                     OTHER_COLUMNS
             ));
 
-            // create hashbit index
+            // create fname hashbit index
             executeUpdateSQL(SqlHelper.getCreateHashIndexSql(
                     FNAME_HASHBIT_INDEX_NAME,
                     TABLE_NAME,
-                    OTHER_COLUMNS.get(0).getName(),
+                    OTHER_COLUMNS.get(1).getName(),
                     FNAME_HASHBIT_INDEX_BUCKETS
             ));
 
-            // generate mock data
+            // create lname hashbit index
+            executeUpdateSQL(SqlHelper.getCreateHashIndexSql(
+                    LNAME_HASHBIT_INDEX_NAME,
+                    TABLE_NAME,
+                    OTHER_COLUMNS.get(3).getName(),
+                    FNAME_HASHBIT_INDEX_BUCKETS
+            ));
 
 
             // insert mock data
@@ -77,19 +85,22 @@ public class Main {
                     log.info("Inserting row {}", i);
                 }
                 String fname = fNames.get(i);
+                String lname = lNames.get(i);
                 executeUpdateSQL(SqlHelper.getInsertSql(
                         TABLE_NAME,
                         OTHER_COLUMNS,
                         Arrays.asList(
                             fname,
-                            fname
+                            fname,
+                            lname,
+                            lname
                         )
                 ));
             }
 
             // query data
-            timeSelect();
-//            testSelect();
+//            timeSelect();
+            testAndSelect();
 
 //
 //
@@ -152,6 +163,27 @@ public class Main {
         }
     }
 
+    private static void testAndSelect() throws SQLException {
+        int testFraction = DATA_ROWS / 4;
+        List<Integer> randInts = new Random(0).ints(0, fNames.size()).distinct().limit(testFraction).boxed().collect(Collectors.toList());
+        for (int j = 0; j < testFraction; j++) {
+            String fname = fNames.get(randInts.get(j));
+            String lname = lNames.get(randInts.get(j));
+            ResultSet indexedRs = executeAndSelectUsingColumns(
+                    Arrays.asList(1,3),
+                    Arrays.asList(fname, lname),
+                    searchStmt1
+            );
+            ResultSet nonIndexedRs = executeAndSelectUsingColumns(
+                    Arrays.asList(0,2),
+                    Arrays.asList(fname, lname),
+                    searchStmt2
+            );
+
+            checkEquality(indexedRs, nonIndexedRs);
+        }
+    }
+
     private static void testOrSelect() throws SQLException {
         for (int j = 0; j < DATA_ROWS; j++) {
             String fname = fNames.get(j);
@@ -202,6 +234,18 @@ public class Main {
                 Collections.singletonList(
                         OTHER_COLUMNS.get(column).getName() + " = '" + fname + "'"
                 )), searchStmt);
+    }
+
+    private static ResultSet executeAndSelectUsingColumns(List<Integer> columns, List<String> values, Statement searchStmt) throws SQLException {
+        List<String> conditions = new ArrayList<>();
+        for (int i = 0; i < columns.size(); i++) {
+            conditions.add(OTHER_COLUMNS.get(columns.get(i)).getName() + " = " + SqlHelper.wrapWithQuote(SqlHelper.escape(values.get(i))));
+        }
+        return executeQuerySQL(SqlHelper.getSelectSql(
+                TABLE_NAME,
+                Collections.singletonList(PRIMARY_KEY),
+                conditions),
+            searchStmt);
     }
 
 

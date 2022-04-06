@@ -61,13 +61,15 @@ public class SqlHelper {
         return sb.toString();
     }
 
-    private static String escape(String str) {
+    public static String escape(String str) {
         return str.replace("'", "''");
     }
 
-    private static String wrapWithQuote(String str) {
+    public static String wrapWithQuote(String str) {
         return "'" + str + "'";
     }
+
+
 
 
 }
